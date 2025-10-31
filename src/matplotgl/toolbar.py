@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
 import ipywidgets as ipw
 
