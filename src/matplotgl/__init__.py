@@ -9,4 +9,15 @@ try:
 except importlib.metadata.PackageNotFoundError:
     __version__ = "0.0.0"
 
+
+from matplotlib import colormaps, colors
+
+from . import pyplot
+
+__all__ = [
+    "colormaps",
+    "colors",
+    "pyplot",
+]
+
 del importlib
