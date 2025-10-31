@@ -135,7 +135,12 @@ class Axes(ipw.GridBox):
         )
         self._margins["cursor"] = ipw.Label(
             "(0.00, 0.00)",
-            layout={"grid_area": "cursor", "padding": "0", "margin": "0"},
+            layout={
+                "grid_area": "cursor",
+                "padding": "0",
+                "margin": "0",
+                "width": "80px",
+            },
         )
 
         if figure is not None:
