@@ -7,7 +7,7 @@
 
 ## About
 
-Matplotlib replacement for Jupyter that uses WebGL via Pythreejs
+Matplotlib clone for Jupyter that uses WebGL via Pythreejs
 
 ## Installation
 

@@ -2,14 +2,13 @@
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
 import warnings
+
+import matplotlib as mpl
+import matplotlib.colors as mplc
 import numpy as np
 import pythreejs as p3
 
-import matplotlib.colors as mplc
-import matplotlib as mpl
-
-from .utils import fix_empty_range, find_limits
-
+from .utils import find_limits, fix_empty_range
 
 SHADER_LIBRARY = {
     "o": """

@@ -1,7 +1,7 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _commit: 47497b5
 _src_path: gh:scipp/copier_template
-description: Matplotlib replacement for Jupyter that uses WebGL via Pythreejs
+description: Matplotlib clone for Jupyter that uses WebGL via Pythreejs
 max_python: '3.13'
 min_python: '3.11'
 namespace_package: ''

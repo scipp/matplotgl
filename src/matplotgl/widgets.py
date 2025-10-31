@@ -3,8 +3,7 @@
 
 import anywidget
 import traitlets
-
-from ipywidgets import VBox, HBox, Widget
+from ipywidgets import HBox, VBox, Widget
 
 
 class Bar:
@@ -19,7 +18,7 @@ class Bar:
         """
         Append a widget to the list of children.
         """
-        self.children = list(self.children) + [obj]
+        self.children = [*list(self.children), obj]
 
     def remove(self, obj: Widget):
         """
@@ -69,10 +68,9 @@ class Box(VBar):
     """
 
     def __init__(self, widgets):
-        children = []
-        for view in widgets:
-            children.append(HBar(view) if isinstance(view, (list, tuple)) else view)
-        super().__init__(children)
+        super().__init__(
+            [HBar(view) if isinstance(view, list | tuple) else view for view in widgets]
+        )
 
 
 class ClickableHTML(anywidget.AnyWidget):

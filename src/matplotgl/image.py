@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
-import pythreejs as p3
 import matplotlib as mpl
 import numpy as np
-
+import pythreejs as p3
 
 from .norm import Normalizer
 
@@ -13,7 +12,7 @@ class Image:
     def __init__(
         self,
         array: np.ndarray,
-        extent: list[float] = None,
+        extent: list[float] | None = None,
         cmap: str = "viridis",
         zorder: float = 0,
     ):

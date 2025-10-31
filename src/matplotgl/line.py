@@ -2,11 +2,12 @@
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
 import warnings
-from matplotlib import colors as mplc
-import pythreejs as p3
-import numpy as np
 
-from .utils import fix_empty_range, find_limits
+import numpy as np
+import pythreejs as p3
+from matplotlib import colors as mplc
+
+from .utils import find_limits, fix_empty_range
 
 
 class Line:

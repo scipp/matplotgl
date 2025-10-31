@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
+from .colorbar import Colorbar
 from .toolbar import Toolbar
 from .widgets import HBar
-
-from .colorbar import Colorbar
 
 
 class Figure(HBar):
@@ -35,7 +34,8 @@ class Figure(HBar):
                 ax._zoom_down_picker.observe(ax.on_mouse_down, names=["point"])
                 ax._zoom_up_picker.observe(ax.on_mouse_up, names=["point"])
                 ax._zoom_move_picker.observe(ax.on_mouse_move, names=["point"])
-                ax.renderer.controls = ax._base_controls + [
+                ax.renderer.controls = [
+                    *ax._base_controls,
                     ax._zoom_down_picker,
                     ax._zoom_up_picker,
                     ax._zoom_move_picker,

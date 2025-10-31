@@ -1,9 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
-import numpy as np
-
 import matplotlib
+import numpy as np
 from matplotlib.figure import Figure as MplFigure
 
 from .axes import Axes
