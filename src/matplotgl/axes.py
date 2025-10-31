@@ -2,15 +2,14 @@
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
 import ipywidgets as ipw
+import numpy as np
 import pythreejs as p3
 from matplotlib.axes import Axes as MplAxes
-import numpy as np
 
-
-from .line import Line
-from .points import Points
 from .image import Image
+from .line import Line
 from .mesh import Mesh
+from .points import Points
 from .utils import latex_to_html
 from .widgets import ClickableHTML
 

@@ -1,6 +1,5 @@
-from typing import Literal
-
 import re
+from typing import Literal
 
 import numpy as np
 import pythreejs as p3
@@ -24,7 +23,7 @@ def value_to_string(val, precision: int = 3) -> str:
     elif (abs(val) >= 1.0e4) or (abs(val) <= 1.0e-4):
         text = "{val:.{prec}e}".format(val=val, prec=precision)
     else:
-        text = "{}".format(val)
+        text = str(val)
         if len(text) > precision + 2 + (text[0] == "-"):
             text = "{val:.{prec}f}".format(val=val, prec=precision)
     return text

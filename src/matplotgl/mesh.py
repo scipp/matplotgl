@@ -2,11 +2,12 @@
 # Copyright (c) 2023 Matplotgl contributors (https://github.com/matplotgl)
 
 import warnings
-import pythreejs as p3
+
 import matplotlib as mpl
 import numpy as np
+import pythreejs as p3
 
-from .utils import fix_empty_range, find_limits
+from .utils import find_limits, fix_empty_range
 
 
 class Mesh:

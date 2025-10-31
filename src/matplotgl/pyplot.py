@@ -1,14 +1,12 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import matplotlib
-from matplotlib.figure import Figure as MplFigure
-
 import numpy as np
+from matplotlib.figure import Figure as MplFigure
 
 from .axes import Axes
 from .figure import Figure
 from .widgets import VBar
-
 
 matplotlib.use("Agg")  # Headless backend
 
