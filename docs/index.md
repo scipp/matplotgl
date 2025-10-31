@@ -24,7 +24,7 @@
 # {transparent}`Matplotgl`
 
 <div style="font-size:1.2em;font-style:italic;color:var(--pst-color-text-muted);text-align:center;">
-  Matplotlib replacement for Jupyter that uses WebGL via Pythreejs
+  Matplotlib clone for Jupyter that uses WebGL via Pythreejs
   </br></br>
 </div>
 

@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "matplotgl"
-description = "Matplotlib replacement for Jupyter that uses WebGL via Pythreejs"
+description = "Matplotlib clone for Jupyter that uses WebGL via Pythreejs"
 authors = [{ name = "Scipp contributors" }]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
