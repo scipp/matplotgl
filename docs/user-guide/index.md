@@ -6,4 +6,7 @@ maxdepth: 1
 ---
 
 installation
+plot
+scatter
+imshow
 ```
