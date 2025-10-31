@@ -22,6 +22,7 @@ class Axes(ipw.GridBox):
         self._ymin = 0.0
         self._ymax = 1.0
         self._fig = None
+        self._spine_linewidth = 1.0
         self._ax = ax
         self._artists = []
         self.lines = []
@@ -341,13 +342,14 @@ class Axes(ipw.GridBox):
         bottom_string = (
             f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
             f'width="{self.width}"><line x1="0" y1="0" x2="{self.width}" y2="0" '
-            'style="stroke:black;stroke-width:1" />'
+            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
         self._margins["topspine"].value = (
             f'<svg height="{self._thin_margin}px" width="{self.width}">'
             f'<line x1="0" y1="{self._thin_margin}" x2="{self.width}" '
-            f'y2="{self._thin_margin}" style="stroke:black;stroke-width:1" />'
+            f'y2="{self._thin_margin}" style="stroke:black;stroke-width:'
+            f'{self._spine_linewidth}" />'
         )
 
         for tick, label in zip(xticks_axes, xlabels, strict=True):
@@ -394,13 +396,13 @@ class Axes(ipw.GridBox):
             f'<svg height="{self.height}" width="{width}">'
             f'<line x1="{width}" y1="0" '
             f'x2="{width}" y2="{self.height}" '
-            'style="stroke:black;stroke-width:1" />'
+            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
         self._margins["rightspine"].value = (
             f'<svg height="{self.height}" width="{self._thin_margin}">'
             f'<line x1="0" y1="0" x2="0" y2="{self.height}" '
-            f'style="stroke:black;stroke-width:1" />'
+            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
         for tick, label in zip(yticks_axes, ytexts, strict=True):
