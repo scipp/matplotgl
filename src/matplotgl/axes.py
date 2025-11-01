@@ -404,16 +404,12 @@ class Axes(ipw.GridBox):
         width = f"calc({max_length}px + {tick_length}px + {label_offset}px)"
         width1 = f"calc({max_length}px + {label_offset}px)"
         width2 = f"calc({max_length}px)"
-        # width3 = f"calc({max_length}px + {tick_length}px + {label_offset}px - 1px)"
 
         left_string = (
             f'<svg height="{self.height}" width="{width}">'
             f'<line x1="{width}" y1="0" '
             f'x2="{width}" y2="{self.height}" '
             f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
-            # f'<line x1="{width3}" y1="0" '
-            # f'x2="{width3}" y2="{self.height}" '
-            # f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
         self._margins["rightspine"].value = (
