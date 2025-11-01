@@ -109,6 +109,11 @@ class Axes(ipw.GridBox):
         # self._margin_with_ticks = 50
         self._thin_margin = 3
 
+        tooltips = {
+            "leftspine": "Double-click to toggle y-scale",
+            "bottomspine": "Double-click to toggle x-scale",
+        }
+
         self._margins = {
             name: ClickableHTML(
                 layout={
@@ -116,6 +121,7 @@ class Axes(ipw.GridBox):
                     "padding": "0",
                     "margin": "0",
                 },
+                tooltip=tooltips.get(name, ""),
             )
             for name in (
                 "leftspine",
@@ -145,6 +151,9 @@ class Axes(ipw.GridBox):
 
         if figure is not None:
             self.set_figure(figure)
+
+        self._margins['leftspine'].on_dblclick(self._toggle_yscale)
+        self._margins['bottomspine'].on_dblclick(self._toggle_xscale)
 
         super().__init__(
             children=[
@@ -486,6 +495,12 @@ class Axes(ipw.GridBox):
             artist._set_yscale(scale)
         self.autoscale()
         self._make_yticks()
+
+    def _toggle_xscale(self, _):
+        self.set_xscale("log" if self.get_xscale() == "linear" else "linear")
+
+    def _toggle_yscale(self, _):
+        self.set_yscale("log" if self.get_yscale() == "linear" else "linear")
 
     def zoom(self, box):
         self._zoom_limits = {

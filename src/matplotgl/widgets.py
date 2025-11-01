@@ -118,8 +118,8 @@ class ClickableHTML(anywidget.AnyWidget):
     tooltip_text = traitlets.Unicode("").tag(sync=True)
     _dblclick_trigger = traitlets.Int(0).tag(sync=True)
 
-    def __init__(self, value="", tooltip="", on_dblclick=None, **kwargs):
+    def __init__(self, value="", tooltip="", **kwargs):
         super().__init__(value=value, tooltip_text=tooltip, **kwargs)
 
-        if on_dblclick:
-            self.observe(lambda change: on_dblclick(self), "_dblclick_trigger")
+    def on_dblclick(self, on_dblclick):
+        self.observe(lambda change: on_dblclick(self), "_dblclick_trigger")
