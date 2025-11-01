@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
+import math
+
 import ipywidgets as ipw
 import numpy as np
 import pythreejs as p3
@@ -347,6 +349,8 @@ class Axes(ipw.GridBox):
             self._ax.transData.transform(xy)
         )[:, 0]
 
+        # width = f"calc({self.width}px + 0.5em)"
+
         bottom_string = (
             f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
             f'width="{self.width}"><line x1="0" y1="0" x2="{self.width}" y2="0" '
@@ -395,16 +399,21 @@ class Axes(ipw.GridBox):
         )[:, 1]
 
         # Predict width of the left margin based on the longest label
-        max_length = max(lab.get_tightbbox().width for lab in ylabels)
+        # Need to convert to integer to avoid sub-pixel rendering issues
+        max_length = math.ceil(max(lab.get_tightbbox().width for lab in ylabels))
         width = f"calc({max_length}px + {tick_length}px + {label_offset}px)"
         width1 = f"calc({max_length}px + {label_offset}px)"
         width2 = f"calc({max_length}px)"
+        # width3 = f"calc({max_length}px + {tick_length}px + {label_offset}px - 1px)"
 
         left_string = (
             f'<svg height="{self.height}" width="{width}">'
             f'<line x1="{width}" y1="0" '
             f'x2="{width}" y2="{self.height}" '
             f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
+            # f'<line x1="{width3}" y1="0" '
+            # f'x2="{width3}" y2="{self.height}" '
+            # f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
         self._margins["rightspine"].value = (
