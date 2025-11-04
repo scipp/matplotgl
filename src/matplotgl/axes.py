@@ -352,13 +352,15 @@ class Axes(ipw.GridBox):
 
         # width = f"calc({self.width}px + 0.5em)"
 
-        bottom_string = (
-            f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
-            f'width="{self.width}"><line x1="0" y1="0" '
-            # f'width="calc(0.5em + {self.width}px)"><line x1="0" y1="0" '
-            f'x2="{self.width}" y2="0" '
-            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
-        )
+        bottom_string = [
+            (
+                f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
+                f'width="{self.width}"><line x1="0" y1="0" '
+                # f'width="calc(0.5em + {self.width}px)"><line x1="0" y1="0" '
+                f'x2="{self.width}" y2="0" '
+                f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
+            )
+        ]
 
         self._margins["topspine"].value = (
             f'<svg height="{self._thin_margin}px" width="{self.width}">'
@@ -371,11 +373,11 @@ class Axes(ipw.GridBox):
             if tick < 0 or tick > 1.0:
                 continue
             x = tick * self.width
-            bottom_string += (
+            bottom_string.append(
                 f'<line x1="{x}" y1="0" x2="{x}" y2="{tick_length}" '
                 'style="stroke:black;stroke-width:1" />'
             )
-            bottom_string += (
+            bottom_string.append(
                 f'<text x="{x}" y="{tick_length + label_offset}" '
                 'text-anchor="middle" dominant-baseline="hanging">'
                 f"{html_to_svg(latex_to_html(label), baseline='hanging')}</text>"
@@ -390,13 +392,13 @@ class Axes(ipw.GridBox):
                 if tick < 0 or tick > 1.0:
                     continue
                 x = tick * self.width
-                bottom_string += (
+                bottom_string.append(
                     f'<line x1="{x}" y1="0" x2="{x}" y2="{tick_length * 0.7}" '
                     'style="stroke:black;stroke-width:0.5" />'
                 )
 
-        bottom_string += "</svg></div>"
-        self._margins["bottomspine"].value = bottom_string
+        bottom_string.append("</svg></div>")
+        self._margins["bottomspine"].value = "".join(bottom_string)
 
     def _make_yticks(self):
         """
@@ -424,12 +426,14 @@ class Axes(ipw.GridBox):
         width2 = f"calc({max_length}px)"
         width3 = f"calc({max_length}px + {tick_length * 0.3}px + {label_offset}px)"
 
-        left_string = (
-            f'<svg height="{self.height}" width="{width}">'
-            f'<line x1="{width}" y1="0" '
-            f'x2="{width}" y2="{self.height}" '
-            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
-        )
+        left_string = [
+            (
+                f'<svg height="{self.height}" width="{width}">'
+                f'<line x1="{width}" y1="0" '
+                f'x2="{width}" y2="{self.height}" '
+                f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
+            )
+        ]
 
         self._margins["rightspine"].value = (
             f'<svg height="{self.height}" width="{self._thin_margin}">'
@@ -441,13 +445,13 @@ class Axes(ipw.GridBox):
             if tick < 0 or tick > 1.0:
                 continue
             y = self.height - (tick * self.height)
-            left_string += (
+            left_string.append(
                 f'<line x1="{width}" y1="{y}" '
                 f'x2="{width1}" y2="{y}" '
                 'style="stroke:black;stroke-width:1" />'
             )
 
-            left_string += (
+            left_string.append(
                 f'<text x="{width2}" '
                 f'y="{y}" text-anchor="end" dominant-baseline="middle">'
                 f"{html_to_svg(latex_to_html(label), baseline='middle')}</text>"
@@ -462,14 +466,14 @@ class Axes(ipw.GridBox):
                 if tick < 0 or tick > 1.0:
                     continue
                 y = self.height - (tick * self.height)
-                left_string += (
+                left_string.append(
                     f'<line x1="{width}" y1="{y}" '
                     f'x2="{width3}" y2="{y}" '
                     'style="stroke:black;stroke-width:0.5" />'
                 )
 
-        left_string += "</svg></div>"
-        self._margins["leftspine"].value = left_string
+        left_string.append("</svg></div>")
+        self._margins["leftspine"].value = "".join(left_string)
 
     def get_xlim(self):
         return self._xmin, self._xmax
