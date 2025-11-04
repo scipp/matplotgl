@@ -345,9 +345,10 @@ class Axes(ipw.GridBox):
         xlabels = [lab.get_text() for lab in self.get_xticklabels()]
 
         xy = np.vstack((xticks, np.zeros_like(xticks))).T
-        xticks_axes = self._ax.transAxes.inverted().transform(
-            self._ax.transData.transform(xy)
-        )[:, 0]
+
+        inv_trans_axes = self._ax.transAxes.inverted()
+        trans_data = self._ax.transData
+        xticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 0]
 
         # width = f"calc({self.width}px + 0.5em)"
 
@@ -380,6 +381,20 @@ class Axes(ipw.GridBox):
                 f"{html_to_svg(latex_to_html(label), baseline='hanging')}</text>"
             )
 
+        minor_ticks = self._ax.xaxis.get_minorticklocs()
+        if len(minor_ticks) > 0:
+            xy = np.vstack((minor_ticks, np.zeros_like(minor_ticks))).T
+            xticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 0]
+
+            for tick in xticks_axes:
+                if tick < 0 or tick > 1.0:
+                    continue
+                x = tick * self.width
+                bottom_string += (
+                    f'<line x1="{x}" y1="0" x2="{x}" y2="{tick_length * 0.7}" '
+                    'style="stroke:black;stroke-width:0.5" />'
+                )
+
         bottom_string += "</svg></div>"
         self._margins["bottomspine"].value = bottom_string
 
@@ -396,9 +411,10 @@ class Axes(ipw.GridBox):
         ytexts = [lab.get_text() for lab in ylabels]
 
         xy = np.vstack((np.zeros_like(yticks), yticks)).T
-        yticks_axes = self._ax.transAxes.inverted().transform(
-            self._ax.transData.transform(xy)
-        )[:, 1]
+
+        inv_trans_axes = self._ax.transAxes.inverted()
+        trans_data = self._ax.transData
+        yticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 1]
 
         # Predict width of the left margin based on the longest label
         # Need to convert to integer to avoid sub-pixel rendering issues
@@ -406,6 +422,7 @@ class Axes(ipw.GridBox):
         width = f"calc({max_length}px + {tick_length}px + {label_offset}px)"
         width1 = f"calc({max_length}px + {label_offset}px)"
         width2 = f"calc({max_length}px)"
+        width3 = f"calc({max_length}px + {tick_length * 0.3}px + {label_offset}px)"
 
         left_string = (
             f'<svg height="{self.height}" width="{width}">'
@@ -435,6 +452,21 @@ class Axes(ipw.GridBox):
                 f'y="{y}" text-anchor="end" dominant-baseline="middle">'
                 f"{html_to_svg(latex_to_html(label), baseline='middle')}</text>"
             )
+
+        minor_ticks = self._ax.yaxis.get_minorticklocs()
+        if len(minor_ticks) > 0:
+            xy = np.vstack((np.zeros_like(minor_ticks), minor_ticks)).T
+            yticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 1]
+
+            for tick in yticks_axes:
+                if tick < 0 or tick > 1.0:
+                    continue
+                y = self.height - (tick * self.height)
+                left_string += (
+                    f'<line x1="{width}" y1="{y}" '
+                    f'x2="{width3}" y2="{y}" '
+                    'style="stroke:black;stroke-width:0.5" />'
+                )
 
         left_string += "</svg></div>"
         self._margins["leftspine"].value = left_string
