@@ -11,7 +11,7 @@ mpl.use("Agg")
 
 
 class Colorbar:
-    def __init__(self, widget, mappable, height: int | float):
+    def __init__(self, widget, mappable, height: float):
         self._mappable = mappable
         self._height = height
         self._widget = widget
