@@ -147,16 +147,52 @@ def latex_to_html(latex_str: str) -> str:
     # Special cases that don't follow the pattern (optional overrides)
     special_replacements = {
         "&cdot;": "&middot;",
-        "<sup>": '<tspan dy="-7%" font-size="10">',
-        "</sup>": "</tspan>",
-        "<sub>": '<tspan dy="7%" font-size="10">',
-        "</sub>": "</tspan>",
+        # "<sup>": '<tspan dy="-7%" font-size="70%">',
+        # "</sup>": "</tspan>",
+        # "<sub>": '<tspan dy="7%" font-size="10">',
+        # "</sub>": "</tspan>",
     }
 
     for entity, replacement in special_replacements.items():
         s = s.replace(entity, replacement)
 
     return s
+
+
+def html_to_svg(text: str, baseline: str) -> str:
+    """Convert HTML text to SVG-compatible text using tspan for subscripts/superscripts.
+
+    Parameters
+    ----------
+    text:
+        The input HTML text.
+    baseline:
+        The dominant baseline alignment for the text ('hanging', 'middle', 'baseline').
+
+    Returns
+    -------
+    str
+        The SVG-compatible text.
+    """
+    replacements = {
+        "hanging": {
+            "<sup>": '<tspan dy="-7%" font-size="70%">',
+            "</sup>": "</tspan>",
+            "<sub>": '<tspan dy="7%" font-size="70%">',
+            "</sub>": "</tspan>",
+        },
+        "middle": {
+            "<sup>": '<tspan dy="-2%" font-size="70%">',
+            "</sup>": "</tspan>",
+            "<sub>": '<tspan dy="2%" font-size="70%">',
+            "</sub>": "</tspan>",
+        },
+    }
+
+    for entity, replacement in replacements[baseline].items():
+        text = text.replace(entity, replacement)
+
+    return text
 
 
 # def html_tags_to_svg(text: str) -> str:

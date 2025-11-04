@@ -11,7 +11,7 @@ from .image import Image
 from .line import Line
 from .mesh import Mesh
 from .points import Points
-from .utils import latex_to_html
+from .utils import html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
 
@@ -147,7 +147,7 @@ class Axes(ipw.GridBox):
                 "grid_area": "cursor",
                 "padding": "0",
                 "margin": "0",
-                "width": "80px",
+                "width": "6em",
             },
         )
 
@@ -353,7 +353,9 @@ class Axes(ipw.GridBox):
 
         bottom_string = (
             f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
-            f'width="{self.width}"><line x1="0" y1="0" x2="{self.width}" y2="0" '
+            f'width="{self.width}"><line x1="0" y1="0" '
+            # f'width="calc(0.5em + {self.width}px)"><line x1="0" y1="0" '
+            f'x2="{self.width}" y2="0" '
             f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
@@ -375,7 +377,7 @@ class Axes(ipw.GridBox):
             bottom_string += (
                 f'<text x="{x}" y="{tick_length + label_offset}" '
                 'text-anchor="middle" dominant-baseline="hanging">'
-                f"{latex_to_html(label)}</text>"
+                f"{html_to_svg(latex_to_html(label), baseline='hanging')}</text>"
             )
 
         bottom_string += "</svg></div>"
@@ -431,7 +433,7 @@ class Axes(ipw.GridBox):
             left_string += (
                 f'<text x="{width2}" '
                 f'y="{y}" text-anchor="end" dominant-baseline="middle">'
-                f"{latex_to_html(label)}</text>"
+                f"{html_to_svg(latex_to_html(label), baseline='middle')}</text>"
             )
 
         left_string += "</svg></div>"
