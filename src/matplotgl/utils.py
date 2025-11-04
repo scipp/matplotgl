@@ -147,10 +147,6 @@ def latex_to_html(latex_str: str) -> str:
     # Special cases that don't follow the pattern (optional overrides)
     special_replacements = {
         "&cdot;": "&middot;",
-        "<sup>": '<tspan dy="-7%" font-size="10">',
-        "</sup>": "</tspan>",
-        "<sub>": '<tspan dy="7%" font-size="10">',
-        "</sub>": "</tspan>",
     }
 
     for entity, replacement in special_replacements.items():
@@ -159,18 +155,37 @@ def latex_to_html(latex_str: str) -> str:
     return s
 
 
-# def html_tags_to_svg(text: str) -> str:
-#     """Convert <sup> and <sub> HTML tags to SVG superscript/subscript using tspan."""
+def html_to_svg(text: str, baseline: str) -> str:
+    """Convert HTML text to SVG-compatible text using tspan for subscripts/superscripts.
 
-#     def replace_sup(match):
-#         content = match.group(1)
-#         return "".join(superscripts.get(c, c) for c in content)
+    Parameters
+    ----------
+    text:
+        The input HTML text.
+    baseline:
+        The dominant baseline alignment for the text ('hanging', 'middle', 'baseline').
 
-#     def replace_sub(match):
-#         content = match.group(1)
-#         return "".join(subscripts.get(c, c) for c in content)
+    Returns
+    -------
+    str
+        The SVG-compatible text.
+    """
+    replacements = {
+        "hanging": {
+            "<sup>": '<tspan dy="-7%" font-size="70%">',
+            "</sup>": "</tspan>",
+            "<sub>": '<tspan dy="7%" font-size="70%">',
+            "</sub>": "</tspan>",
+        },
+        "middle": {
+            "<sup>": '<tspan dy="-2%" font-size="70%">',
+            "</sup>": "</tspan>",
+            "<sub>": '<tspan dy="2%" font-size="70%">',
+            "</sub>": "</tspan>",
+        },
+    }
 
-#     text = re.sub(r"<sup>(.*?)</sup>", replace_sup, text)
-#     text = re.sub(r"<sub>(.*?)</sub>", replace_sub, text)
+    for entity, replacement in replacements[baseline].items():
+        text = text.replace(entity, replacement)
 
-#     return text
+    return text

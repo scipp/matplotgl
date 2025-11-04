@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
+import math
+
 import ipywidgets as ipw
 import numpy as np
 import pythreejs as p3
@@ -9,7 +11,7 @@ from .image import Image
 from .line import Line
 from .mesh import Mesh
 from .points import Points
-from .utils import latex_to_html
+from .utils import html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
 
@@ -109,6 +111,11 @@ class Axes(ipw.GridBox):
         # self._margin_with_ticks = 50
         self._thin_margin = 3
 
+        tooltips = {
+            "leftspine": "Double-click to toggle y-scale",
+            "bottomspine": "Double-click to toggle x-scale",
+        }
+
         self._margins = {
             name: ClickableHTML(
                 layout={
@@ -116,6 +123,7 @@ class Axes(ipw.GridBox):
                     "padding": "0",
                     "margin": "0",
                 },
+                tooltip=tooltips.get(name, ""),
             )
             for name in (
                 "leftspine",
@@ -139,12 +147,15 @@ class Axes(ipw.GridBox):
                 "grid_area": "cursor",
                 "padding": "0",
                 "margin": "0",
-                "width": "80px",
+                "width": "6em",
             },
         )
 
         if figure is not None:
             self.set_figure(figure)
+
+        self._margins['leftspine'].on_dblclick(self._toggle_yscale)
+        self._margins['bottomspine'].on_dblclick(self._toggle_xscale)
 
         super().__init__(
             children=[
@@ -334,13 +345,18 @@ class Axes(ipw.GridBox):
         xlabels = [lab.get_text() for lab in self.get_xticklabels()]
 
         xy = np.vstack((xticks, np.zeros_like(xticks))).T
-        xticks_axes = self._ax.transAxes.inverted().transform(
-            self._ax.transData.transform(xy)
-        )[:, 0]
+
+        inv_trans_axes = self._ax.transAxes.inverted()
+        trans_data = self._ax.transData
+        xticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 0]
+
+        # width = f"calc({self.width}px + 0.5em)"
 
         bottom_string = (
             f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
-            f'width="{self.width}"><line x1="0" y1="0" x2="{self.width}" y2="0" '
+            f'width="{self.width}"><line x1="0" y1="0" '
+            # f'width="calc(0.5em + {self.width}px)"><line x1="0" y1="0" '
+            f'x2="{self.width}" y2="0" '
             f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
         )
 
@@ -362,8 +378,22 @@ class Axes(ipw.GridBox):
             bottom_string += (
                 f'<text x="{x}" y="{tick_length + label_offset}" '
                 'text-anchor="middle" dominant-baseline="hanging">'
-                f"{latex_to_html(label)}</text>"
+                f"{html_to_svg(latex_to_html(label), baseline='hanging')}</text>"
             )
+
+        minor_ticks = self._ax.xaxis.get_minorticklocs()
+        if len(minor_ticks) > 0:
+            xy = np.vstack((minor_ticks, np.zeros_like(minor_ticks))).T
+            xticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 0]
+
+            for tick in xticks_axes:
+                if tick < 0 or tick > 1.0:
+                    continue
+                x = tick * self.width
+                bottom_string += (
+                    f'<line x1="{x}" y1="0" x2="{x}" y2="{tick_length * 0.7}" '
+                    'style="stroke:black;stroke-width:0.5" />'
+                )
 
         bottom_string += "</svg></div>"
         self._margins["bottomspine"].value = bottom_string
@@ -381,15 +411,18 @@ class Axes(ipw.GridBox):
         ytexts = [lab.get_text() for lab in ylabels]
 
         xy = np.vstack((np.zeros_like(yticks), yticks)).T
-        yticks_axes = self._ax.transAxes.inverted().transform(
-            self._ax.transData.transform(xy)
-        )[:, 1]
+
+        inv_trans_axes = self._ax.transAxes.inverted()
+        trans_data = self._ax.transData
+        yticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 1]
 
         # Predict width of the left margin based on the longest label
-        max_length = max(lab.get_tightbbox().width for lab in ylabels)
+        # Need to convert to integer to avoid sub-pixel rendering issues
+        max_length = math.ceil(max(lab.get_tightbbox().width for lab in ylabels))
         width = f"calc({max_length}px + {tick_length}px + {label_offset}px)"
         width1 = f"calc({max_length}px + {label_offset}px)"
         width2 = f"calc({max_length}px)"
+        width3 = f"calc({max_length}px + {tick_length * 0.3}px + {label_offset}px)"
 
         left_string = (
             f'<svg height="{self.height}" width="{width}">'
@@ -417,8 +450,23 @@ class Axes(ipw.GridBox):
             left_string += (
                 f'<text x="{width2}" '
                 f'y="{y}" text-anchor="end" dominant-baseline="middle">'
-                f"{latex_to_html(label)}</text>"
+                f"{html_to_svg(latex_to_html(label), baseline='middle')}</text>"
             )
+
+        minor_ticks = self._ax.yaxis.get_minorticklocs()
+        if len(minor_ticks) > 0:
+            xy = np.vstack((np.zeros_like(minor_ticks), minor_ticks)).T
+            yticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 1]
+
+            for tick in yticks_axes:
+                if tick < 0 or tick > 1.0:
+                    continue
+                y = self.height - (tick * self.height)
+                left_string += (
+                    f'<line x1="{width}" y1="{y}" '
+                    f'x2="{width3}" y2="{y}" '
+                    'style="stroke:black;stroke-width:0.5" />'
+                )
 
         left_string += "</svg></div>"
         self._margins["leftspine"].value = left_string
@@ -486,6 +534,12 @@ class Axes(ipw.GridBox):
             artist._set_yscale(scale)
         self.autoscale()
         self._make_yticks()
+
+    def _toggle_xscale(self, _):
+        self.set_xscale("log" if self.get_xscale() == "linear" else "linear")
+
+    def _toggle_yscale(self, _):
+        self.set_yscale("log" if self.get_yscale() == "linear" else "linear")
 
     def zoom(self, box):
         self._zoom_limits = {
