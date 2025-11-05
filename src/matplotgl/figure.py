@@ -106,10 +106,9 @@ class Figure(HBar):
         cb = Colorbar(
             widget=ax._margins["colorbar"],
             mappable=mappable,
-            height_inches=ax.height / self._dpi,
+            height=ax.height,
         )
         cb.update()
         mappable._colorbar = cb
         mappable._norm._colorbar = cb
         return cb
-        # ax._margins["colorbar"].value = cb_svg

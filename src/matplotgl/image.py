@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import matplotlib as mpl
+import matplotlib.colors as cm
 import numpy as np
 import pythreejs as p3
 
@@ -13,6 +14,7 @@ class Image:
         array: np.ndarray,
         extent: list[float] | None = None,
         cmap: str = "viridis",
+        norm: str = "linear",
         zorder: float = 0,
     ):
         self.axes = None
@@ -22,7 +24,9 @@ class Image:
             extent if extent is not None else [0, array.shape[1], 0, array.shape[0]]
         )
         self._zorder = zorder
-        self._norm = Normalizer(vmin=np.min(self._array), vmax=np.max(self._array))
+        self._norm = Normalizer(
+            vmin=np.min(self._array), vmax=np.max(self._array), norm=norm
+        )
         self._cmap = mpl.colormaps[cmap].copy()
         self._texture = p3.DataTexture(
             data=self._make_colors(), format="RGBFormat", type="FloatType"
@@ -97,12 +101,12 @@ class Image:
 
     def set_cmap(self, cmap: str) -> None:
         self._cmap = mpl.colormaps[cmap].copy()
-        self._texture.data = self._make_colors()
+        self._update_colors()
         if self._colorbar is not None:
             self._colorbar.update()
 
     @property
-    def cmap(self) -> mpl.colormaps:
+    def cmap(self) -> cm.Colormap:
         return self._cmap
 
     @cmap.setter
@@ -121,6 +125,6 @@ class Image:
             )
         else:
             self._norm = norm
-        self._texture.data = self._make_colors()
+        self._update_colors()
         if self._colorbar is not None:
             self._colorbar.update()

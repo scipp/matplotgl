@@ -3,14 +3,16 @@
 import warnings
 
 import matplotlib as mpl
+import matplotlib.colors as cm
 import numpy as np
 import pythreejs as p3
 
+from .norm import Normalizer
 from .utils import find_limits, fix_empty_range
 
 
 class Mesh:
-    def __init__(self, *args, cmap="viridis"):
+    def __init__(self, *args, cmap: str = "viridis", norm: str = "linear"):
         if len(args) not in (1, 3):
             raise ValueError(
                 f"Invalid number of arguments: expected 1 or 3. Got {len(args)}"
@@ -25,6 +27,7 @@ class Mesh:
             y = np.arange(M + 1)
 
         self.axes = None
+        self._colorbar = None
         self._xscale = "linear"
         self._yscale = "linear"
 
@@ -32,8 +35,8 @@ class Mesh:
         self._y = np.asarray(y)
         self._c = np.asarray(c)
 
-        self.norm = mpl.colors.Normalize(vmin=np.min(self._c), vmax=np.max(self._c))
-        self.cmap = mpl.colormaps[cmap].copy()
+        self._norm = Normalizer(vmin=np.min(self._c), vmax=np.max(self._c), norm=norm)
+        self._cmap = mpl.colormaps[cmap].copy()
 
         self._faces = self._make_faces()
 
@@ -55,7 +58,7 @@ class Mesh:
         self._mesh = p3.Mesh(geometry=self._geometry, material=self._material)
 
     def _make_colors(self) -> np.ndarray:
-        colors_rgba = self.cmap(self.norm(self._c.flatten()))
+        colors_rgba = self._cmap(self._norm(self._c.flatten()))
         colors = colors_rgba[:, :3].astype("float32")
         # Assign colors to vertices (each vertex in a cell gets the same color)
         return np.repeat(colors, 4, axis=0)  # 4 vertices per cell
@@ -114,6 +117,9 @@ class Mesh:
     def _update_positions(self) -> None:
         self._geometry.attributes["position"].array = self._make_vertices()
 
+    def _update_colors(self) -> None:
+        self._geometry.attributes["color"].array = self._make_colors()
+
     def get_bbox(self) -> dict[str, float]:
         pad = False
         left, right = fix_empty_range(find_limits(self._x, scale=self._xscale, pad=pad))
@@ -139,7 +145,7 @@ class Mesh:
 
     def set_array(self, c: np.ndarray):
         self._c = np.asarray(c)
-        self._geometry.attributes["color"].array = self._make_colors()
+        self._update_colors()
 
     def _set_xscale(self, scale: str) -> None:
         self._xscale = scale
@@ -148,3 +154,33 @@ class Mesh:
     def _set_yscale(self, scale: str) -> None:
         self._yscale = scale
         self._update_positions()
+
+    def set_cmap(self, cmap: str) -> None:
+        self._cmap = mpl.colormaps[cmap].copy()
+        self._update_colors()
+        if self._colorbar is not None:
+            self._colorbar.update()
+
+    @property
+    def cmap(self) -> cm.Colormap:
+        return self._cmap
+
+    @cmap.setter
+    def cmap(self, cmap: str) -> None:
+        self.set_cmap(cmap)
+
+    @property
+    def norm(self) -> Normalizer:
+        return self._norm
+
+    @norm.setter
+    def norm(self, norm: Normalizer | str) -> None:
+        if isinstance(norm, str):
+            self._norm = Normalizer(
+                vmin=np.min(self._c), vmax=np.max(self._c), norm=norm
+            )
+        else:
+            self._norm = norm
+        self._update_colors()
+        if self._colorbar is not None:
+            self._colorbar.update()
