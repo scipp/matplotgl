@@ -27,6 +27,7 @@ class Mesh:
             y = np.arange(M + 1)
 
         self.axes = None
+        self._colorbar = None
         self._xscale = "linear"
         self._yscale = "linear"
 
