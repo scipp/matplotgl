@@ -101,7 +101,6 @@ class Image:
 
     def set_cmap(self, cmap: str) -> None:
         self._cmap = mpl.colormaps[cmap].copy()
-        # self._texture.data = self._make_colors()
         self._update_colors()
         if self._colorbar is not None:
             self._colorbar.update()
@@ -126,7 +125,6 @@ class Image:
             )
         else:
             self._norm = norm
-        # self._texture.data = self._make_colors()
         self._update_colors()
         if self._colorbar is not None:
             self._colorbar.update()
