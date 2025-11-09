@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import numpy as np
+import pytest
 
 import matplotgl.pyplot as plt
 
@@ -60,3 +61,90 @@ def test_imshow():
     im = ax.images[0]
     assert np.allclose(im._array, data)
     assert im.get_extent() == [0, 10, 0, 5]
+
+
+def test_set_xscale_log():
+    _, ax = plt.subplots()
+    x = np.arange(50.0)
+    y = np.sin(0.2 * x)
+
+    ax.plot(x, y, lw=2)
+    ax.set_xscale('log')
+
+    assert ax.get_xscale() == 'log'
+
+
+def test_set_yscale_log():
+    _, ax = plt.subplots()
+    x = np.arange(50.0)
+    y = np.sin(0.2 * x)
+
+    ax.plot(x, y, lw=2)
+    ax.set_yscale('log')
+
+    assert ax.get_yscale() == 'log'
+
+
+def test_set_xscale_invalid():
+    _, ax = plt.subplots()
+    with pytest.raises(ValueError, match="Scale must be 'linear' or 'log'"):
+        ax.set_xscale('invalid_scale')
+
+
+def test_set_yscale_invalid():
+    _, ax = plt.subplots()
+    with pytest.raises(ValueError, match="Scale must be 'linear' or 'log'"):
+        ax.set_yscale('invalid_scale')
+
+
+def test_set_xscale_log_before_plot():
+    _, ax = plt.subplots()
+    x = np.arange(50.0)
+    y = np.sin(0.2 * x)
+
+    ax.set_xscale('log')
+    ax.plot(x, y, lw=2)
+
+    assert ax.get_xscale() == 'log'
+
+
+def test_set_yscale_log_before_plot():
+    _, ax = plt.subplots()
+    x = np.arange(50.0)
+    y = np.sin(0.2 * x)
+
+    ax.set_yscale('log')
+    ax.plot(x, y, lw=2)
+
+    assert ax.get_yscale() == 'log'
+
+
+def test_semilogx():
+    _, ax = plt.subplots()
+    x = np.arange(1.0, 50.0)
+    y = np.sin(0.2 * x)
+
+    ax.semilogx(x, y, lw=2)
+
+    assert ax.get_xscale() == 'log'
+
+
+def test_semilogy():
+    _, ax = plt.subplots()
+    x = np.arange(50.0)
+    y = np.exp(0.1 * x)
+
+    ax.semilogy(x, y, lw=2)
+
+    assert ax.get_yscale() == 'log'
+
+
+def test_loglog():
+    _, ax = plt.subplots()
+    x = np.arange(1.0, 50.0)
+    y = np.exp(0.1 * x)
+
+    ax.loglog(x, y, lw=2)
+
+    assert ax.get_xscale() == 'log'
+    assert ax.get_yscale() == 'log'
