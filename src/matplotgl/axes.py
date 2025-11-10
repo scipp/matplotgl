@@ -717,7 +717,9 @@ class Axes(ipw.GridBox):
     def scatter(self, *args, c=None, **kwargs):
         if c is None:
             c = f"C{len(self.collections)}"
-        coll = Points(*args, c=c, **kwargs)
+        coll = Points(
+            *args, c=c, xscale=self.get_xscale(), yscale=self.get_yscale(), **kwargs
+        )
         coll.axes = self
         self.collections.append(coll)
         self.add_artist(coll)
@@ -733,7 +735,7 @@ class Axes(ipw.GridBox):
         return image
 
     def pcolormesh(self, *args, **kwargs):
-        mesh = Mesh(*args, **kwargs)
+        mesh = Mesh(*args, xscale=self.get_xscale(), yscale=self.get_yscale(), **kwargs)
         mesh.axes = self
         self.collections.append(mesh)
         self.add_artist(mesh)

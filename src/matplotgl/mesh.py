@@ -12,7 +12,14 @@ from .utils import find_limits, fix_empty_range
 
 
 class Mesh:
-    def __init__(self, *args, cmap: str = "viridis", norm: str = "linear"):
+    def __init__(
+        self,
+        *args,
+        cmap: str = "viridis",
+        norm: str = "linear",
+        xscale="linear",
+        yscale="linear",
+    ):
         if len(args) not in (1, 3):
             raise ValueError(
                 f"Invalid number of arguments: expected 1 or 3. Got {len(args)}"
@@ -28,8 +35,8 @@ class Mesh:
 
         self.axes = None
         self._colorbar = None
-        self._xscale = "linear"
-        self._yscale = "linear"
+        self._xscale = xscale
+        self._yscale = yscale
 
         self._x = np.asarray(x)
         self._y = np.asarray(y)
