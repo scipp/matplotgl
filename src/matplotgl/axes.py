@@ -15,6 +15,14 @@ from .utils import html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
 
+def min_with_none(a, b):
+    return a if b is None else min(a, b)
+
+
+def max_with_none(a, b):
+    return a if b is None else max(a, b)
+
+
 class Axes(ipw.GridBox):
     def __init__(self, *, ax: MplAxes, figure=None) -> None:
         self.background_color = "#ffffff"
@@ -290,35 +298,43 @@ class Axes(ipw.GridBox):
         # self._margins["rightspine"].height = h
 
     def autoscale(self):
-        xmin = np.inf
-        xmax = -np.inf
-        ymin = np.inf
-        ymax = -np.inf
+        xmin = None
+        xmax = None
+        ymin = None
+        ymax = None
         for artist in self._artists:
             lims = artist.get_bbox()
-            xmin = min(lims["left"], xmin)
-            xmax = max(lims["right"], xmax)
-            ymin = min(lims["bottom"], ymin)
-            ymax = max(lims["top"], ymax)
-        self._xmin = xmin
-        self._xmax = xmax
-        self._ymin = ymin
-        self._ymax = ymax
+            xmin = min_with_none(lims["left"], xmin)
+            xmax = max_with_none(lims["right"], xmax)
+            ymin = min_with_none(lims["bottom"], ymin)
+            ymax = max_with_none(lims["top"], ymax)
+        self._xmin = (
+            xmin
+            if xmin is not None
+            else (0.0 if self.get_xscale() == "linear" else 1.0)
+        )
+        self._xmax = (
+            xmax
+            if xmax is not None
+            else (1.0 if self.get_xscale() == "linear" else 10.0)
+        )
+        self._ymin = (
+            ymin
+            if ymin is not None
+            else (0.0 if self.get_yscale() == "linear" else 1.0)
+        )
+        self._ymax = (
+            ymax
+            if ymax is not None
+            else (1.0 if self.get_yscale() == "linear" else 10.0)
+        )
 
-        # self._background_mesh.geometry = p3.BoxGeometry(
-        #     width=2 * (self._xmax - self._xmin),
-        #     height=2 * (self._ymax - self._ymin),
-        #     widthSegments=1,
-        #     heightSegments=1,
-        # )
         self._background_mesh.geometry = p3.PlaneGeometry(
             width=2 * (self._xmax - self._xmin),
             height=2 * (self._ymax - self._ymin),
             widthSegments=1,
             heightSegments=1,
         )
-        # self._background_mesh.geometry.width = 2 * (self._xmax - self._xmin)
-        # self._background_mesh.geometry.height = 2 * (self._ymax - self._ymin)
 
         self._background_mesh.position = [
             0.5 * (self._xmin + self._xmax),
@@ -523,6 +539,10 @@ class Axes(ipw.GridBox):
         return self._ax.get_xscale()
 
     def set_xscale(self, scale):
+        if scale not in ("linear", "log"):
+            raise ValueError("Scale must be 'linear' or 'log'")
+        if scale == self.get_xscale():
+            return
         self._ax.set_xscale(scale)
         for artist in self._artists:
             artist._set_xscale(scale)
@@ -533,6 +553,10 @@ class Axes(ipw.GridBox):
         return self._ax.get_yscale()
 
     def set_yscale(self, scale):
+        if scale not in ("linear", "log"):
+            raise ValueError("Scale must be 'linear' or 'log'")
+        if scale == self.get_yscale():
+            return
         self._ax.set_yscale(scale)
         for artist in self._artists:
             artist._set_yscale(scale)
@@ -661,12 +685,34 @@ class Axes(ipw.GridBox):
     def plot(self, *args, color=None, **kwargs):
         if color is None:
             color = f"C{len(self.lines)}"
-        line = Line(*args, color=color, **kwargs)
+        line = Line(
+            *args,
+            color=color,
+            xscale=self.get_xscale(),
+            yscale=self.get_yscale(),
+            **kwargs,
+        )
         line.axes = self
         self.lines.append(line)
         self.add_artist(line)
         self.autoscale()
         return line
+
+    def semilogx(self, *args, **kwargs):
+        out = self.plot(*args, **kwargs)
+        self.set_xscale("log")
+        return out
+
+    def semilogy(self, *args, **kwargs):
+        out = self.plot(*args, **kwargs)
+        self.set_yscale("log")
+        return out
+
+    def loglog(self, *args, **kwargs):
+        out = self.plot(*args, **kwargs)
+        self.set_xscale("log")
+        self.set_yscale("log")
+        return out
 
     def scatter(self, *args, c=None, **kwargs):
         if c is None:
