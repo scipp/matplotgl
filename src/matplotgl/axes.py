@@ -345,7 +345,7 @@ class Axes(ipw.GridBox):
 
     def add_artist(self, artist):
         self._artists.append(artist)
-        self.scene.add(artist.get())
+        self.scene.add(artist._as_object3d())
 
     def get_figure(self):
         return self._fig

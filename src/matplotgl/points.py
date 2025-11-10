@@ -148,7 +148,7 @@ class Points:
         bottom, top = fix_empty_range(find_limits(self._y, scale=self._yscale, pad=pad))
         return {"left": left, "right": right, "bottom": bottom, "top": top}
 
-    def get(self):
+    def _as_object3d(self) -> p3.Object3D:
         return self._points
 
     def get_xdata(self) -> np.ndarray:

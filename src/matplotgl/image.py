@@ -63,7 +63,7 @@ class Image:
     def _update_colors(self) -> None:
         self._texture.data = self._make_colors()
 
-    def get(self) -> p3.Object3D:
+    def _as_object3d(self) -> p3.Object3D:
         return self._image
 
     def _set_xscale(self, scale: str) -> None:

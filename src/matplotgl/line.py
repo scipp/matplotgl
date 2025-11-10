@@ -61,7 +61,7 @@ class Line:
         bottom, top = fix_empty_range(find_limits(self._y, scale=self._yscale, pad=pad))
         return {"left": left, "right": right, "bottom": bottom, "top": top}
 
-    def get(self):
+    def _as_object3d(self) -> p3.Object3D:
         out = []
         if self._line is not None:
             out.append(self._line)
