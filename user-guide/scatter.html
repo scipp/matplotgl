@@ -1,0 +1,593 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Scatter &#8212; Matplotgl</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=0d8463a1"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user-guide/scatter';</script>
+    <script src="../_static/anaconda-icon.js?v=461bdc62"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Imshow" href="imshow.html" />
+    <link rel="prev" title="Plot" href="plot.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="25.11.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt="Matplotgl - Home"/>
+    <img src="../_static/logo-dark.svg" class="logo__image only-dark pst-js-only" alt="Matplotgl - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api-reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developer/index.html">
+    Development
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-external" href="https://scipp.github.io/">
+    
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/scipp/matplotgl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/matplotgl/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/matplotgl" title="Conda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-anaconda fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Conda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api-reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developer/index.html">
+    Development
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../about/index.html">
+    About
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://scipp.github.io/">
+    
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/scipp/matplotgl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/matplotgl/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/conda-forge/matplotgl" title="Conda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-custom fa-anaconda fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Conda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Plot</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Scatter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imshow.html">Imshow</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user-guide/scatter.ipynb"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Scatter</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Scatter">
+<h1>Scatter<a class="headerlink" href="#Scatter" title="Link to this heading">#</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotgl.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="n">fig</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "2f8a860e57f447e3aeca76e6e2c2c76a"}</script></div>
+</div>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {"aa9f719952cb4a9185561fce6d627df2": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": "36px"}}, "044c5224bd984637b8c55600bd190095": {"model_name": "ButtonStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ButtonStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "button_color": null, "font_family": null, "font_size": null, "font_style": null, "font_variant": null, "font_weight": null, "text_color": null, "text_decoration": null}}, "699d039161b348bf9f752d0ada588df3": {"model_name": "ButtonModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ButtonModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ButtonView", "button_style": "", "description": "", "disabled": false, "icon": "home", "layout": "IPY_MODEL_aa9f719952cb4a9185561fce6d627df2", "style": "IPY_MODEL_044c5224bd984637b8c55600bd190095", "tabbable": null, "tooltip": "autoscale"}}, "8475121b369b483d80ed5ff8c47e0ce2": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": "36px"}}, "79d6c1f967fe4240b5e0a63c011a5422": {"model_name": "ToggleButtonStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ToggleButtonStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "description_width": "", "font_family": null, "font_size": null, "font_style": null, "font_variant": null, "font_weight": null, "text_color": null, "text_decoration": null}}, "d6559e25ae3344a1bfe0c16b68c64e6c": {"model_name": "ToggleButtonModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ToggleButtonModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ToggleButtonView", "button_style": "", "description": "", "description_allow_html": false, "disabled": false, "icon": "square-o", "layout": "IPY_MODEL_8475121b369b483d80ed5ff8c47e0ce2", "style": "IPY_MODEL_79d6c1f967fe4240b5e0a63c011a5422", "tabbable": null, "tooltip": "zoom", "value": false}}, "b96922e6ace64a4799036a8eca93f455": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": "36px"}}, "694bac39e77b4bdf9b275584b5f95575": {"model_name": "ToggleButtonStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ToggleButtonStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "description_width": "", "font_family": null, "font_size": null, "font_style": null, "font_variant": null, "font_weight": null, "text_color": null, "text_decoration": null}}, "415887e54929465ca56a9a147f3bf1e4": {"model_name": "ToggleButtonModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ToggleButtonModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ToggleButtonView", "button_style": "", "description": "", "description_allow_html": false, "disabled": false, "icon": "arrows", "layout": "IPY_MODEL_b96922e6ace64a4799036a8eca93f455", "style": "IPY_MODEL_694bac39e77b4bdf9b275584b5f95575", "tabbable": null, "tooltip": "pan (right-click)", "value": false}}, "90d14aa69594426e8260f42acdc49a9d": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "de837156fa4d46b0b677c74c0cd3a294": {"model_name": "VBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "VBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "VBoxView", "box_style": "", "children": ["IPY_MODEL_699d039161b348bf9f752d0ada588df3", "IPY_MODEL_d6559e25ae3344a1bfe0c16b68c64e6c", "IPY_MODEL_415887e54929465ca56a9a147f3bf1e4"], "layout": "IPY_MODEL_90d14aa69594426e8260f42acdc49a9d", "tabbable": null, "tooltip": null}}, "96ac23f3eb004622a27db1874336a2db": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "2f8a860e57f447e3aeca76e6e2c2c76a": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_de837156fa4d46b0b677c74c0cd3a294", "IPY_MODEL_9c7b984f3a9f4f77baf560d50d022559"], "layout": "IPY_MODEL_96ac23f3eb004622a27db1874336a2db", "tabbable": null, "tooltip": null}}, "007b943679e545e484a0b30c9615efec": {"model_name": "PlaneGeometryModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PlaneGeometryModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "height": 6e+38, "heightSegments": 1, "name": "", "type": "PlaneGeometry", "width": 6e+38, "widthSegments": 1}}, "6e71a987fa5a4304b3d4c50301372de7": {"model_name": "MeshBasicMaterialModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "MeshBasicMaterialModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "alphaMap": null, "alphaTest": 0.0, "aoMap": null, "aoMapIntensity": 1.0, "blendDst": "OneMinusSrcAlphaFactor", "blendDstAlpha": 0.0, "blendEquation": "AddEquation", "blendEquationAlpha": 0.0, "blendSrc": "SrcAlphaFactor", "blendSrcAlpha": 0.0, "blending": "NormalBlending", "clipIntersection": false, "clipShadows": false, "clippingPlanes": [], "color": "#ffffff", "colorWrite": true, "combine": "MultiplyOperation", "defines": null, "depthFunc": "LessEqualDepth", "depthTest": true, "depthWrite": true, "dithering": false, "envMap": null, "flatShading": false, "fog": true, "lightMap": null, "lightMapIntensity": 1.0, "lights": false, "map": null, "morphTargets": false, "name": "", "opacity": 1.0, "overdraw": 0.0, "polygonOffset": false, "polygonOffsetFactor": 0.0, "polygonOffsetUnits": 0.0, "precision": null, "premultipliedAlpha": false, "reflectivity": 1.0, "refractionRatio": 0.98, "shadowSide": null, "side": "FrontSide", "skinning": false, "specularMap": null, "transparent": false, "type": "MeshBasicMaterial", "vertexColors": "NoColors", "visible": true, "wireframe": false, "wireframeLinecap": "round", "wireframeLinejoin": "round", "wireframeLinewidth": 1.0}}, "a48b57e782d74187b4054e7093470140": {"model_name": "MeshModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "MeshModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "castShadow": false, "children": [], "drawMode": "TrianglesDrawMode", "frustumCulled": true, "geometry": "IPY_MODEL_007b943679e545e484a0b30c9615efec", "material": "IPY_MODEL_6e71a987fa5a4304b3d4c50301372de7", "matrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixAutoUpdate": true, "matrixWorld": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixWorldNeedsUpdate": false, "modelViewMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "morphTargetInfluences": [], "name": "", "normalMatrix": [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], "position": [0.0, 0.0, -101.0], "quaternion": [0.0, 0.0, 0.0, 1.0], "receiveShadow": false, "renderOrder": 0, "rotation": [0.0, 0.0, 0.0, "XYZ"], "scale": [1.0, 1.0, 1.0], "type": "Mesh", "up": [0.0, 1.0, 0.0], "visible": true}}, "305f38771c48436887a28fc7fe99726d": {"model_name": "PickerModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PickerModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "all": false, "controlling": "IPY_MODEL_a48b57e782d74187b4054e7093470140", "distance": null, "event": "mousemove", "face": [0.0, 0.0, 0.0], "faceIndex": null, "faceNormal": [0.0, 0.0, 0.0], "faceVertices": [], "index": null, "indices": [], "instanceId": null, "lineThreshold": 1.0, "modifiers": [], "object": null, "picked": [], "point": [0.0, 0.0, 0.0], "pointThreshold": 1.0, "uv": [0.0, 0.0]}}, "f70990ebe0e048378c0173a9b0209945": {"model_name": "PickerModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PickerModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "all": false, "controlling": "IPY_MODEL_a48b57e782d74187b4054e7093470140", "distance": null, "event": "mousedown", "face": [0.0, 0.0, 0.0], "faceIndex": null, "faceNormal": [0.0, 0.0, 0.0], "faceVertices": [], "index": null, "indices": [], "instanceId": null, "lineThreshold": 1.0, "modifiers": [], "object": null, "picked": [], "point": [0.0, 0.0, 0.0], "pointThreshold": 1.0, "uv": [0.0, 0.0]}}, "2c601bdc710e476aa2e833967f5c3d9c": {"model_name": "PickerModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PickerModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "all": false, "controlling": "IPY_MODEL_a48b57e782d74187b4054e7093470140", "distance": null, "event": "mouseup", "face": [0.0, 0.0, 0.0], "faceIndex": null, "faceNormal": [0.0, 0.0, 0.0], "faceVertices": [], "index": null, "indices": [], "instanceId": null, "lineThreshold": 1.0, "modifiers": [], "object": null, "picked": [], "point": [0.0, 0.0, 0.0], "pointThreshold": 1.0, "uv": [0.0, 0.0]}}, "59997ba6d83344a98d9a94ec3bd57381": {"model_name": "PickerModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PickerModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "all": false, "controlling": "IPY_MODEL_a48b57e782d74187b4054e7093470140", "distance": null, "event": "mousemove", "face": [0.0, 0.0, 0.0], "faceIndex": null, "faceNormal": [0.0, 0.0, 0.0], "faceVertices": [], "index": null, "indices": [], "instanceId": null, "lineThreshold": 1.0, "modifiers": [], "object": null, "picked": [], "point": [0.0, 0.0, 0.0], "pointThreshold": 1.0, "uv": [0.0, 0.0]}}, "eb46c51c5f354d27b7a88e66c7426b91": {"model_name": "LineGeometryModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "LineGeometryModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "colors": null, "name": "", "positions": {"shape": [5, 3], "dtype": "float32"}, "type": "LineGeometry"}, "buffers": [{"data": "AAAAAAAAAAAAAMpCAAAAAAAAAAAAAMpCAAAAAAAAAAAAAMpCAAAAAAAAAAAAAMpCAAAAAAAAAAAAAMpC", "encoding": "base64", "path": ["positions", "buffer"]}]}, "933a7be88043449196340771dafb30f0": {"model_name": "LineMaterialModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "LineMaterialModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "alphaTest": 0.0, "blendDst": "OneMinusSrcAlphaFactor", "blendDstAlpha": 0.0, "blendEquation": "AddEquation", "blendEquationAlpha": 0.0, "blendSrc": "SrcAlphaFactor", "blendSrcAlpha": 0.0, "blending": "NormalBlending", "clipIntersection": false, "clipShadows": false, "clippingPlanes": [], "color": "black", "colorWrite": true, "dashScale": 1.0, "dashSize": 1.0, "defines": null, "depthFunc": "LessEqualDepth", "depthTest": true, "depthWrite": true, "dithering": false, "flatShading": false, "fog": false, "gapSize": 1.0, "lights": false, "linewidth": 1.5, "name": "", "opacity": 1.0, "overdraw": 0.0, "polygonOffset": false, "polygonOffsetFactor": 0.0, "polygonOffsetUnits": 0.0, "precision": null, "premultipliedAlpha": false, "shadowSide": null, "side": "FrontSide", "transparent": false, "type": "LineMaterial", "vertexColors": "NoColors", "visible": true}}, "64089c69e594438fa06c2c044b984c21": {"model_name": "Line2Model", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "Line2Model", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "castShadow": false, "children": [], "drawMode": "TrianglesDrawMode", "frustumCulled": true, "geometry": "IPY_MODEL_eb46c51c5f354d27b7a88e66c7426b91", "material": "IPY_MODEL_933a7be88043449196340771dafb30f0", "matrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixAutoUpdate": true, "matrixWorld": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixWorldNeedsUpdate": false, "modelViewMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "morphTargetInfluences": [], "name": "", "normalMatrix": [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], "position": [0.0, 0.0, 0.0], "quaternion": [0.0, 0.0, 0.0, 1.0], "receiveShadow": false, "renderOrder": 0, "rotation": [0.0, 0.0, 0.0, "XYZ"], "scale": [1.0, 1.0, 1.0], "type": "Line2", "up": [0.0, 1.0, 0.0], "visible": false}}, "8a3ad6f8743241d8917f6c9f1f9d0b54": {"model_name": "OrthographicCameraModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "OrthographicCameraModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "bottom": -3.1706708606744334, "castShadow": false, "children": [], "far": 300.0, "frustumCulled": true, "left": -3.24610982695384, "matrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixAutoUpdate": true, "matrixWorld": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixWorldInverse": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixWorldNeedsUpdate": false, "modelViewMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "name": "", "near": -1.0, "normalMatrix": [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], "position": [0.0, 0.0, 102.0], "projectionMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "quaternion": [0.0, 0.0, 0.0, 1.0], "receiveShadow": false, "renderOrder": 0, "right": 3.2395561157563484, "rotation": [0.0, 0.0, 0.0, "XYZ"], "scale": [1.0, 1.0, 1.0], "top": 3.3809517649297387, "type": "OrthographicCamera", "up": [0.0, 1.0, 0.0], "visible": true, "zoom": 1.0}}, "2bac71f886954f4da1c28e8ed2cc9e33": {"model_name": "SceneModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "SceneModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "autoUpdate": true, "background": "#ffffff", "castShadow": false, "children": ["IPY_MODEL_8a3ad6f8743241d8917f6c9f1f9d0b54", "IPY_MODEL_a48b57e782d74187b4054e7093470140", "IPY_MODEL_64089c69e594438fa06c2c044b984c21", "IPY_MODEL_79f3756b17474332a7ea0358ef0ae639"], "fog": null, "frustumCulled": true, "matrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixAutoUpdate": true, "matrixWorld": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixWorldNeedsUpdate": false, "modelViewMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "name": "", "normalMatrix": [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], "overrideMaterial": null, "position": [0.0, 0.0, 0.0], "quaternion": [0.0, 0.0, 0.0, 1.0], "receiveShadow": false, "renderOrder": 0, "rotation": [0.0, 0.0, 0.0, "XYZ"], "scale": [1.0, 1.0, 1.0], "type": "Scene", "up": [0.0, 1.0, 0.0], "visible": true}}, "b230684721cd4ffaa5060f309279f41b": {"model_name": "OrbitControlsModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "OrbitControlsModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "autoRotate": false, "autoRotateSpeed": 2.0, "controlling": "IPY_MODEL_8a3ad6f8743241d8917f6c9f1f9d0b54", "dampingFactor": 0.25, "enableDamping": false, "enableKeys": true, "enablePan": false, "enableRotate": false, "enableZoom": false, "enabled": true, "keyPanSpeed": 7.0, "maxAzimuthAngle": "inf", "maxDistance": "inf", "maxPolarAngle": 3.141592653589793, "maxZoom": "inf", "minAzimuthAngle": "-inf", "minDistance": 0.0, "minPolarAngle": 0.0, "minZoom": 0.0, "panSpeed": 1.0, "rotateSpeed": 1.0, "screenSpacePanning": true, "target": [0.0, 0.0, 0.0], "zoomSpeed": 1.0}}, "fde22482504242ac8951c4db65e028f8": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "renderer", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": "336px", "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": "480px"}}, "0b32c362011a49819ce772666ce02d32": {"model_name": "WebGLShadowMapModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "WebGLShadowMapModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "enabled": false, "type": "PCFShadowMap"}}, "62497436dde64f5e9880d927a1b75bac": {"model_name": "RendererModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_alpha": false, "_antialias": true, "_dom_classes": [], "_height": 336, "_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "RendererModel", "_pause_autorender": false, "_view_count": null, "_view_module": "jupyter-threejs", "_view_module_version": "^2.4.1", "_view_name": "RendererView", "_webgl_version": 2, "_width": 480, "autoClear": true, "autoClearColor": true, "autoClearDepth": true, "autoClearStencil": true, "background": "black", "background_opacity": 1.0, "camera": "IPY_MODEL_8a3ad6f8743241d8917f6c9f1f9d0b54", "clearColor": "#000000", "clearOpacity": 1.0, "clippingPlanes": [], "controls": ["IPY_MODEL_b230684721cd4ffaa5060f309279f41b", "IPY_MODEL_305f38771c48436887a28fc7fe99726d"], "gammaFactor": 2.0, "gammaInput": false, "gammaOutput": false, "layout": "IPY_MODEL_fde22482504242ac8951c4db65e028f8", "localClippingEnabled": false, "maxMorphNormals": 4, "maxMorphTargets": 8, "physicallyCorrectLights": false, "scene": "IPY_MODEL_2bac71f886954f4da1c28e8ed2cc9e33", "shadowMap": "IPY_MODEL_0b32c362011a49819ce772666ce02d32", "sortObject": true, "tabbable": null, "toneMapping": "LinearToneMapping", "toneMappingExposure": 1.0, "toneMappingWhitePoint": 1.0, "tooltip": null}}, "2f022314f58a44e3a37703b30cbcf3ae": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "leftspine", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "e8608632d01249788f08e615830ff2c4": {"model_name": "AnyModel", "model_module": "anywidget", "model_module_version": "~0.9.*", "state": {"_anywidget_id": "matplotgl.widgets.ClickableHTML", "_dblclick_trigger": 0, "_dom_classes": [], "_esm": "\n    export function render({ model, el }) {\n      let div = document.createElement(\"div\");\n      div.innerHTML = model.get(\"value\");\n      div.style.cursor = \"pointer\";\n      div.style.lineHeight = \"0\";  // Remove line-height spacing\n\n      // Make sure SVGs don't have extra spacing\n      const svgs = div.querySelectorAll(\"svg\");\n      svgs.forEach(svg => {\n        svg.style.display = \"block\";\n      });\n\n      // Set tooltip if provided\n      const tooltip_text = model.get(\"tooltip_text\");\n      if (tooltip_text) {\n        div.title = tooltip_text;\n      }\n\n\n      div.ondblclick = () => {\n        model.set(\"_dblclick_trigger\", model.get(\"_dblclick_trigger\") + 1);\n        model.save_changes();\n      };\n      el.appendChild(div);\n\n      model.on(\"change:value\", () => {\n        div.innerHTML = model.get(\"value\");\n        // Re-apply block display to any new SVGs\n        const svgs = div.querySelectorAll(\"svg\");\n        svgs.forEach(svg => {\n          svg.style.display = \"block\";\n        });\n      });\n\n      model.on(\"change:tooltip_text\", () => {\n        div.title = model.get(\"tooltip_text\");\n      });\n    }\n    ", "_model_module": "anywidget", "_model_module_version": "~0.9.*", "_model_name": "AnyModel", "_view_count": null, "_view_module": "anywidget", "_view_module_version": "~0.9.*", "_view_name": "AnyView", "layout": "IPY_MODEL_2f022314f58a44e3a37703b30cbcf3ae", "tabbable": null, "tooltip": null, "tooltip_text": "Double-click to toggle y-scale", "value": "<svg height=\"336\" width=\"30px\"><line x1=\"30\" y1=\"0\" x2=\"30\" y2=\"336\" style=\"stroke:black;stroke-width:1.0\" /><line x1=\"30\" y1=\"327.24714403383064\" x2=\"24\" y2=\"327.24714403383064\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"327.24714403383064\" text-anchor=\"end\" dominant-baseline=\"middle\">\u22123</text><line x1=\"30\" y1=\"275.96213889832575\" x2=\"24\" y2=\"275.96213889832575\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"275.96213889832575\" text-anchor=\"end\" dominant-baseline=\"middle\">\u22122</text><line x1=\"30\" y1=\"224.67713376282086\" x2=\"24\" y2=\"224.67713376282086\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"224.67713376282086\" text-anchor=\"end\" dominant-baseline=\"middle\">\u22121</text><line x1=\"30\" y1=\"173.39212862731597\" x2=\"24\" y2=\"173.39212862731597\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"173.39212862731597\" text-anchor=\"end\" dominant-baseline=\"middle\">0</text><line x1=\"30\" y1=\"122.10712349181108\" x2=\"24\" y2=\"122.10712349181108\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"122.10712349181108\" text-anchor=\"end\" dominant-baseline=\"middle\">1</text><line x1=\"30\" y1=\"70.82211835630619\" x2=\"24\" y2=\"70.82211835630619\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"70.82211835630619\" text-anchor=\"end\" dominant-baseline=\"middle\">2</text><line x1=\"30\" y1=\"19.53711322080136\" x2=\"24\" y2=\"19.53711322080136\" style=\"stroke:black;stroke-width:1\" /><text x=\"21\" y=\"19.53711322080136\" text-anchor=\"end\" dominant-baseline=\"middle\">3</text></svg></div>"}}, "c1b64f88d2884400ba9227b493afa13c": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "rightspine", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "2d1a9585d8764e959da9d40084ebd713": {"model_name": "AnyModel", "model_module": "anywidget", "model_module_version": "~0.9.*", "state": {"_anywidget_id": "matplotgl.widgets.ClickableHTML", "_dblclick_trigger": 0, "_dom_classes": [], "_esm": "\n    export function render({ model, el }) {\n      let div = document.createElement(\"div\");\n      div.innerHTML = model.get(\"value\");\n      div.style.cursor = \"pointer\";\n      div.style.lineHeight = \"0\";  // Remove line-height spacing\n\n      // Make sure SVGs don't have extra spacing\n      const svgs = div.querySelectorAll(\"svg\");\n      svgs.forEach(svg => {\n        svg.style.display = \"block\";\n      });\n\n      // Set tooltip if provided\n      const tooltip_text = model.get(\"tooltip_text\");\n      if (tooltip_text) {\n        div.title = tooltip_text;\n      }\n\n\n      div.ondblclick = () => {\n        model.set(\"_dblclick_trigger\", model.get(\"_dblclick_trigger\") + 1);\n        model.save_changes();\n      };\n      el.appendChild(div);\n\n      model.on(\"change:value\", () => {\n        div.innerHTML = model.get(\"value\");\n        // Re-apply block display to any new SVGs\n        const svgs = div.querySelectorAll(\"svg\");\n        svgs.forEach(svg => {\n          svg.style.display = \"block\";\n        });\n      });\n\n      model.on(\"change:tooltip_text\", () => {\n        div.title = model.get(\"tooltip_text\");\n      });\n    }\n    ", "_model_module": "anywidget", "_model_module_version": "~0.9.*", "_model_name": "AnyModel", "_view_count": null, "_view_module": "anywidget", "_view_module_version": "~0.9.*", "_view_name": "AnyView", "layout": "IPY_MODEL_c1b64f88d2884400ba9227b493afa13c", "tabbable": null, "tooltip": null, "tooltip_text": "", "value": "<svg height=\"336\" width=\"3\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"336\" style=\"stroke:black;stroke-width:1.0\" />"}}, "bb615898f38e43b6b35e615860b255a7": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "bottomspine", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "4ab8c06e02ae48cdb0ea979659e02ee2": {"model_name": "AnyModel", "model_module": "anywidget", "model_module_version": "~0.9.*", "state": {"_anywidget_id": "matplotgl.widgets.ClickableHTML", "_dblclick_trigger": 0, "_dom_classes": [], "_esm": "\n    export function render({ model, el }) {\n      let div = document.createElement(\"div\");\n      div.innerHTML = model.get(\"value\");\n      div.style.cursor = \"pointer\";\n      div.style.lineHeight = \"0\";  // Remove line-height spacing\n\n      // Make sure SVGs don't have extra spacing\n      const svgs = div.querySelectorAll(\"svg\");\n      svgs.forEach(svg => {\n        svg.style.display = \"block\";\n      });\n\n      // Set tooltip if provided\n      const tooltip_text = model.get(\"tooltip_text\");\n      if (tooltip_text) {\n        div.title = tooltip_text;\n      }\n\n\n      div.ondblclick = () => {\n        model.set(\"_dblclick_trigger\", model.get(\"_dblclick_trigger\") + 1);\n        model.save_changes();\n      };\n      el.appendChild(div);\n\n      model.on(\"change:value\", () => {\n        div.innerHTML = model.get(\"value\");\n        // Re-apply block display to any new SVGs\n        const svgs = div.querySelectorAll(\"svg\");\n        svgs.forEach(svg => {\n          svg.style.display = \"block\";\n        });\n      });\n\n      model.on(\"change:tooltip_text\", () => {\n        div.title = model.get(\"tooltip_text\");\n      });\n    }\n    ", "_model_module": "anywidget", "_model_module_version": "~0.9.*", "_model_name": "AnyModel", "_view_count": null, "_view_module": "anywidget", "_view_module_version": "~0.9.*", "_view_name": "AnyView", "layout": "IPY_MODEL_bb615898f38e43b6b35e615860b255a7", "tabbable": null, "tooltip": null, "tooltip_text": "Double-click to toggle x-scale", "value": "<svg height=\"28px\" width=\"480\"><line x1=\"0\" y1=\"0\" x2=\"480\" y2=\"0\" style=\"stroke:black;stroke-width:1.0\" /><line x1=\"18.21443132923355\" y1=\"0\" x2=\"18.21443132923355\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"18.21443132923355\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">\u22123</text><line x1=\"92.22379355047381\" y1=\"0\" x2=\"92.22379355047381\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"92.22379355047381\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">\u22122</text><line x1=\"166.23315577171408\" y1=\"0\" x2=\"166.23315577171408\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"166.23315577171408\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">\u22121</text><line x1=\"240.24251799295433\" y1=\"0\" x2=\"240.24251799295433\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"240.24251799295433\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">0</text><line x1=\"314.2518802141946\" y1=\"0\" x2=\"314.2518802141946\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"314.2518802141946\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">1</text><line x1=\"388.26124243543484\" y1=\"0\" x2=\"388.26124243543484\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"388.26124243543484\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">2</text><line x1=\"462.2706046566752\" y1=\"0\" x2=\"462.2706046566752\" y2=\"6\" style=\"stroke:black;stroke-width:1\" /><text x=\"462.2706046566752\" y=\"9\" text-anchor=\"middle\" dominant-baseline=\"hanging\">3</text></svg></div>"}}, "5dcc5ec7f1e04f398981a13d4addca2a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "topspine", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "b4683a1677db46878fce32726d88d909": {"model_name": "AnyModel", "model_module": "anywidget", "model_module_version": "~0.9.*", "state": {"_anywidget_id": "matplotgl.widgets.ClickableHTML", "_dblclick_trigger": 0, "_dom_classes": [], "_esm": "\n    export function render({ model, el }) {\n      let div = document.createElement(\"div\");\n      div.innerHTML = model.get(\"value\");\n      div.style.cursor = \"pointer\";\n      div.style.lineHeight = \"0\";  // Remove line-height spacing\n\n      // Make sure SVGs don't have extra spacing\n      const svgs = div.querySelectorAll(\"svg\");\n      svgs.forEach(svg => {\n        svg.style.display = \"block\";\n      });\n\n      // Set tooltip if provided\n      const tooltip_text = model.get(\"tooltip_text\");\n      if (tooltip_text) {\n        div.title = tooltip_text;\n      }\n\n\n      div.ondblclick = () => {\n        model.set(\"_dblclick_trigger\", model.get(\"_dblclick_trigger\") + 1);\n        model.save_changes();\n      };\n      el.appendChild(div);\n\n      model.on(\"change:value\", () => {\n        div.innerHTML = model.get(\"value\");\n        // Re-apply block display to any new SVGs\n        const svgs = div.querySelectorAll(\"svg\");\n        svgs.forEach(svg => {\n          svg.style.display = \"block\";\n        });\n      });\n\n      model.on(\"change:tooltip_text\", () => {\n        div.title = model.get(\"tooltip_text\");\n      });\n    }\n    ", "_model_module": "anywidget", "_model_module_version": "~0.9.*", "_model_name": "AnyModel", "_view_count": null, "_view_module": "anywidget", "_view_module_version": "~0.9.*", "_view_name": "AnyView", "layout": "IPY_MODEL_5dcc5ec7f1e04f398981a13d4addca2a", "tabbable": null, "tooltip": null, "tooltip_text": "", "value": "<svg height=\"3px\" width=\"480\"><line x1=\"0\" y1=\"3\" x2=\"480\" y2=\"3\" style=\"stroke:black;stroke-width:1.0\" />"}}, "e59a1adcf0b044f38966e610075b0906": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "colorbar", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "17a1bc071faf4dd3904d140115be4e39": {"model_name": "AnyModel", "model_module": "anywidget", "model_module_version": "~0.9.*", "state": {"_anywidget_id": "matplotgl.widgets.ClickableHTML", "_dblclick_trigger": 0, "_dom_classes": [], "_esm": "\n    export function render({ model, el }) {\n      let div = document.createElement(\"div\");\n      div.innerHTML = model.get(\"value\");\n      div.style.cursor = \"pointer\";\n      div.style.lineHeight = \"0\";  // Remove line-height spacing\n\n      // Make sure SVGs don't have extra spacing\n      const svgs = div.querySelectorAll(\"svg\");\n      svgs.forEach(svg => {\n        svg.style.display = \"block\";\n      });\n\n      // Set tooltip if provided\n      const tooltip_text = model.get(\"tooltip_text\");\n      if (tooltip_text) {\n        div.title = tooltip_text;\n      }\n\n\n      div.ondblclick = () => {\n        model.set(\"_dblclick_trigger\", model.get(\"_dblclick_trigger\") + 1);\n        model.save_changes();\n      };\n      el.appendChild(div);\n\n      model.on(\"change:value\", () => {\n        div.innerHTML = model.get(\"value\");\n        // Re-apply block display to any new SVGs\n        const svgs = div.querySelectorAll(\"svg\");\n        svgs.forEach(svg => {\n          svg.style.display = \"block\";\n        });\n      });\n\n      model.on(\"change:tooltip_text\", () => {\n        div.title = model.get(\"tooltip_text\");\n      });\n    }\n    ", "_model_module": "anywidget", "_model_module_version": "~0.9.*", "_model_name": "AnyModel", "_view_count": null, "_view_module": "anywidget", "_view_module_version": "~0.9.*", "_view_name": "AnyView", "layout": "IPY_MODEL_e59a1adcf0b044f38966e610075b0906", "tabbable": null, "tooltip": null, "tooltip_text": "", "value": ""}}, "afe15d4927ff405e9bc4d587923a4960": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "xlabel", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "1a3c4336f2bf491c936497c7e1d731c8": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "f985bbc576db48e1864c32e2817766de": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_afe15d4927ff405e9bc4d587923a4960", "placeholder": "\u200b", "style": "IPY_MODEL_1a3c4336f2bf491c936497c7e1d731c8", "tabbable": null, "tooltip": null, "value": ""}}, "59df7c671b854123a1a5eaf99c8f6ec7": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "ylabel", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "146fc026687f4fcaa9b8d189825c0101": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "ae6825d7734e4fbfb7a7aabad988e73f": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_59df7c671b854123a1a5eaf99c8f6ec7", "placeholder": "\u200b", "style": "IPY_MODEL_146fc026687f4fcaa9b8d189825c0101", "tabbable": null, "tooltip": null, "value": ""}}, "40d518759a7f40648e7ef80fc17e2b7d": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "title", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "22a4f780b9014328813663b9d6957ab5": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "4dcd5b2761944fdda27db5532dadc815": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_40d518759a7f40648e7ef80fc17e2b7d", "placeholder": "\u200b", "style": "IPY_MODEL_22a4f780b9014328813663b9d6957ab5", "tabbable": null, "tooltip": null, "value": ""}}, "63c1cf8794a14479a53c23b7f2d82dff": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": "cursor", "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": "6em"}}, "f3cecdf9b4874b4d95f0779136fd2dd2": {"model_name": "LabelStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "LabelStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_family": null, "font_size": null, "font_style": null, "font_variant": null, "font_weight": null, "text_color": null, "text_decoration": null}}, "d0bfc209530d4c0e85881dc83ccd4938": {"model_name": "LabelModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "LabelModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "LabelView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_63c1cf8794a14479a53c23b7f2d82dff", "placeholder": "\u200b", "style": "IPY_MODEL_f3cecdf9b4874b4d95f0779136fd2dd2", "tabbable": null, "tooltip": null, "value": "(0.00, 0.00)"}}, "93843536beb241c98b9eeb43ee245f0a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": "0px 0px", "grid_row": null, "grid_template_areas": "\n            \". . title . .\"\n            \". . topspine topspine colorbar\"\n            \"ylabel leftspine renderer rightspine colorbar\"\n            \". leftspine bottomspine bottomspine colorbar\"\n            \". . xlabel cursor cursor\"\n            ", "grid_template_columns": "autoautoautoautoauto", "grid_template_rows": "autoautoautoautoauto", "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": "0", "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": "0", "right": null, "top": null, "visibility": null, "width": null}}, "eab0a6266c694fe4a0544cf560b0886f": {"model_name": "GridBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "GridBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "GridBoxView", "box_style": "", "children": ["IPY_MODEL_e8608632d01249788f08e615830ff2c4", "IPY_MODEL_2d1a9585d8764e959da9d40084ebd713", "IPY_MODEL_4ab8c06e02ae48cdb0ea979659e02ee2", "IPY_MODEL_b4683a1677db46878fce32726d88d909", "IPY_MODEL_17a1bc071faf4dd3904d140115be4e39", "IPY_MODEL_f985bbc576db48e1864c32e2817766de", "IPY_MODEL_ae6825d7734e4fbfb7a7aabad988e73f", "IPY_MODEL_4dcd5b2761944fdda27db5532dadc815", "IPY_MODEL_d0bfc209530d4c0e85881dc83ccd4938", "IPY_MODEL_62497436dde64f5e9880d927a1b75bac"], "layout": "IPY_MODEL_93843536beb241c98b9eeb43ee245f0a", "tabbable": null, "tooltip": null}}, "bb2320d39fd249ae9899f6903cfbcb8e": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "9c7b984f3a9f4f77baf560d50d022559": {"model_name": "VBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "VBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "VBoxView", "box_style": "", "children": ["IPY_MODEL_eab0a6266c694fe4a0544cf560b0886f"], "layout": "IPY_MODEL_bb2320d39fd249ae9899f6903cfbcb8e", "tabbable": null, "tooltip": null}}, "453133bc5e52424aafad6024d34268b5": {"model_name": "BufferAttributeModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "BufferAttributeModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "array": {"shape": [1000, 3], "dtype": "float32"}, "dynamic": false, "needsUpdate": false, "normalized": true, "version": -1}, "buffers": [{"data": "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", "encoding": "base64", "path": ["array", "buffer"]}]}, "2f7c4c071af64a6fb8b2e39cc94bd876": {"model_name": "BufferGeometryModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"MaxIndex": 65535, "_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "BufferGeometryModel", "_ref_geometry": null, "_store_ref": false, "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "attributes": {"position": "IPY_MODEL_453133bc5e52424aafad6024d34268b5"}, "index": null, "morphAttributes": {}, "name": "", "type": "BufferGeometry", "userData": {}}}, "a350237d44954c66a1ce157f531ea154": {"model_name": "PointsMaterialModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PointsMaterialModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "alphaTest": 0.0, "blendDst": "OneMinusSrcAlphaFactor", "blendDstAlpha": 0.0, "blendEquation": "AddEquation", "blendEquationAlpha": 0.0, "blendSrc": "SrcAlphaFactor", "blendSrcAlpha": 0.0, "blending": "NormalBlending", "clipIntersection": false, "clipShadows": false, "clippingPlanes": [], "color": "#1f77b4", "colorWrite": true, "defines": null, "depthFunc": "LessEqualDepth", "depthTest": true, "depthWrite": true, "dithering": false, "flatShading": false, "fog": true, "lights": false, "map": null, "morphTargets": false, "name": "", "opacity": 1.0, "overdraw": 0.0, "polygonOffset": false, "polygonOffsetFactor": 0.0, "polygonOffsetUnits": 0.0, "precision": null, "premultipliedAlpha": false, "shadowSide": null, "side": "FrontSide", "size": 6.0, "sizeAttenuation": true, "transparent": false, "type": "PointsMaterial", "vertexColors": "NoColors", "visible": true}}, "79f3756b17474332a7ea0358ef0ae639": {"model_name": "PointsModel", "model_module": "jupyter-threejs", "model_module_version": "^2.4.1", "state": {"_model_module": "jupyter-threejs", "_model_module_version": "^2.4.1", "_model_name": "PointsModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "castShadow": false, "children": [], "frustumCulled": true, "geometry": "IPY_MODEL_2f7c4c071af64a6fb8b2e39cc94bd876", "material": "IPY_MODEL_a350237d44954c66a1ce157f531ea154", "matrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixAutoUpdate": true, "matrixWorld": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "matrixWorldNeedsUpdate": false, "modelViewMatrix": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0], "name": "", "normalMatrix": [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], "position": [0.0, 0.0, 0.0], "quaternion": [0.0, 0.0, 0.0, 1.0], "receiveShadow": false, "renderOrder": 0, "rotation": [0.0, 0.0, 0.0, "XYZ"], "scale": [1.0, 1.0, 1.0], "type": "Points", "up": [0.0, 1.0, 0.0], "visible": true}}}, "version_major": 2, "version_minor": 0}
+</script></section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="plot.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Plot</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="imshow.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Imshow</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025 Scipp contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><!-- This will display the version of the docs -->
+Current Matplotgl version: 25.11.1 (<a href="https://github.com/scipp/matplotgl/releases">older versions</a>).</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
