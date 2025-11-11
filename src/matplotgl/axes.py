@@ -15,12 +15,34 @@ from .utils import html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
 
-def min_with_none(a, b):
+def _min_with_none(a, b):
     return a if b is None else min(a, b)
 
 
-def max_with_none(a, b):
+def _max_with_none(a, b):
     return a if b is None else max(a, b)
+
+
+def _em_to_px(em_value):
+    """Convert em units to pixels using standard conversion (1em = 16px)."""
+    return int(em_value * 16)
+
+
+def _multiply_font_size(fontsize, multiplier):
+    """
+    Multiply a font size by a factor.
+
+    Args:
+        fontsize: Font size string (e.g., "1.2em", "14px", "10pt")
+        multiplier: Factor to multiply by
+
+    Returns:
+        String with multiplied font size
+    """
+    value = float(fontsize[:-2])
+    unit = fontsize[-2:]
+    result_value = value * multiplier
+    return f"{result_value}{unit}"
 
 
 class Axes(ipw.GridBox):
@@ -305,10 +327,10 @@ class Axes(ipw.GridBox):
         ymax = None
         for artist in self._artists:
             lims = artist.get_bbox()
-            xmin = min_with_none(lims["left"], xmin)
-            xmax = max_with_none(lims["right"], xmax)
-            ymin = min_with_none(lims["bottom"], ymin)
-            ymax = max_with_none(lims["top"], ymax)
+            xmin = _min_with_none(lims["left"], xmin)
+            xmax = _max_with_none(lims["right"], xmax)
+            ymin = _min_with_none(lims["bottom"], ymin)
+            ymax = _max_with_none(lims["top"], ymax)
         self._xmin = (
             xmin
             if xmin is not None
@@ -355,13 +377,11 @@ class Axes(ipw.GridBox):
         trans_data = self._ax.transData
         xticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 0]
 
-        # width = f"calc({self.width}px + 0.5em)"
-
+        height_px = _em_to_px(1.2) + tick_length + label_offset
         bottom_string = [
             (
-                f'<svg height="calc(1.2em + {tick_length}px + {label_offset}px)" '
+                f'<svg height="{height_px}px" '
                 f'width="{self.width}"><line x1="0" y1="0" '
-                # f'width="calc(0.5em + {self.width}px)"><line x1="0" y1="0" '
                 f'x2="{self.width}" y2="0" '
                 f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
             )
@@ -426,16 +446,16 @@ class Axes(ipw.GridBox):
         # Predict width of the left margin based on the longest label
         # Need to convert to integer to avoid sub-pixel rendering issues
         max_length = math.ceil(max(lab.get_tightbbox().width for lab in ylabels))
-        width = f"calc({max_length}px + {tick_length}px + {label_offset}px)"
-        width1 = f"calc({max_length}px + {label_offset}px)"
-        width2 = f"calc({max_length}px)"
-        width3 = f"calc({max_length}px + {tick_length * 0.3}px + {label_offset}px)"
+        width_px = max_length + tick_length + label_offset
+        width1_px = max_length + label_offset
+        width2_px = max_length
+        width3_px = max_length + int(tick_length * 0.3) + label_offset
 
         left_string = [
             (
-                f'<svg height="{self.height}" width="{width}">'
-                f'<line x1="{width}" y1="0" '
-                f'x2="{width}" y2="{self.height}" '
+                f'<svg height="{self.height}" width="{width_px}px">'
+                f'<line x1="{width_px}" y1="0" '
+                f'x2="{width_px}" y2="{self.height}" '
                 f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
             )
         ]
@@ -451,13 +471,13 @@ class Axes(ipw.GridBox):
                 continue
             y = self.height - (tick * self.height)
             left_string.append(
-                f'<line x1="{width}" y1="{y}" '
-                f'x2="{width1}" y2="{y}" '
+                f'<line x1="{width_px}" y1="{y}" '
+                f'x2="{width1_px}" y2="{y}" '
                 'style="stroke:black;stroke-width:1" />'
             )
 
             left_string.append(
-                f'<text x="{width2}" '
+                f'<text x="{width2_px}" '
                 f'y="{y}" text-anchor="end" dominant-baseline="middle">'
                 f"{html_to_svg(latex_to_html(label), baseline='middle')}</text>"
             )
@@ -472,8 +492,8 @@ class Axes(ipw.GridBox):
                     continue
                 y = self.height - (tick * self.height)
                 left_string.append(
-                    f'<line x1="{width}" y1="{y}" '
-                    f'x2="{width3}" y2="{y}" '
+                    f'<line x1="{width_px}" y1="{y}" '
+                    f'x2="{width3_px}" y2="{y}" '
                     'style="stroke:black;stroke-width:0.5" />'
                 )
 
@@ -621,12 +641,10 @@ class Axes(ipw.GridBox):
 
     def set_xlabel(self, label, fontsize="1.1em"):
         if label:
-            # Height should be 115% of fontsize to account for line height
-            # height = "calc(1.15 * {fontsize})"
+            height = _multiply_font_size(fontsize, 1.3)
             self._margins["xlabel"].value = (
                 '<div style="position:relative; '
-                # f'width: {self.width}px; height: {fontsize};">'
-                f'width: {self.width}px; height: calc(1.3 * {fontsize});">'
+                f'width: {self.width}px; height: {height};">'
                 '<div style="position:relative; top: 50%;left: 50%; '
                 f"transform: translate(-50%, -50%); font-size: {fontsize};"
                 f'float:left;">{label.replace(" ", "&nbsp;")}</div></div>'
@@ -640,9 +658,10 @@ class Axes(ipw.GridBox):
 
     def set_ylabel(self, label, fontsize="1.1em"):
         if label:
+            width = _multiply_font_size(fontsize, 1.25)
             self._margins["ylabel"].value = (
                 '<div style="position:relative; '
-                f'width: calc(1.25 * {fontsize}); height: {self.height}px;">'
+                f'width: {width}; height: {self.height}px;">'
                 '<div style="position:relative; top: 50%;left: 50%; '
                 f"transform: translate(-50%, -50%) rotate(-90deg); "
                 f"font-size: {fontsize};"
@@ -657,9 +676,10 @@ class Axes(ipw.GridBox):
 
     def set_title(self, title, fontsize="1.2em"):
         if title:
+            height = _multiply_font_size(fontsize, 1.3)
             self._margins["title"].value = (
                 '<div style="position:relative; '
-                f'width: {self.width}px; height: calc(1.3 * {fontsize});">'
+                f'width: {self.width}px; height: {height};">'
                 '<div style="position:relative; top: 50%;left: 50%; '
                 f"transform: translate(-50%, -50%); font-size: {fontsize};"
                 f'float:left;">{title.replace(" ", "&nbsp;")}</div></div>'
