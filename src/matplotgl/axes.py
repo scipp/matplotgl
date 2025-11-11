@@ -38,9 +38,10 @@ class Axes(ipw.GridBox):
         self.collections = []
         self.images = []
 
-        # Make background to enable box zoom
+        # Make background to enable box zoom.
+        # Use a size based on limits of the float32 range.
         self._background_geometry = p3.PlaneGeometry(
-            width=2, height=2, widthSegments=1, heightSegments=1
+            width=6e38, height=6e38, widthSegments=1, heightSegments=1
         )
         self._background_material = p3.MeshBasicMaterial(color=self.background_color)
         self._background_mesh = p3.Mesh(
@@ -329,18 +330,6 @@ class Axes(ipw.GridBox):
             else (1.0 if self.get_yscale() == "linear" else 10.0)
         )
 
-        self._background_mesh.geometry = p3.PlaneGeometry(
-            width=2 * (self._xmax - self._xmin),
-            height=2 * (self._ymax - self._ymin),
-            widthSegments=1,
-            heightSegments=1,
-        )
-
-        self._background_mesh.position = [
-            0.5 * (self._xmin + self._xmax),
-            0.5 * (self._ymin + self._ymax),
-            self._background_mesh.position[-1],
-        ]
         self.reset()
 
     def add_artist(self, artist):
@@ -577,10 +566,10 @@ class Axes(ipw.GridBox):
             "ymax": box[3],
         }
         with self.camera.hold_trait_notifications():
-            self.camera.left = self._zoom_limits["xmin"]
-            self.camera.right = self._zoom_limits["xmax"]
-            self.camera.bottom = self._zoom_limits["ymin"]
-            self.camera.top = self._zoom_limits["ymax"]
+            self.camera.left = self._zoom_limits["xmin"] - self.camera.position[0]
+            self.camera.right = self._zoom_limits["xmax"] - self.camera.position[0]
+            self.camera.bottom = self._zoom_limits["ymin"] - self.camera.position[1]
+            self.camera.top = self._zoom_limits["ymax"] - self.camera.position[1]
         if self.get_xscale() == "log":
             xlim = (
                 10.0 ** self._zoom_limits["xmin"],
