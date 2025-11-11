@@ -7,7 +7,19 @@
 
 ## About
 
-Matplotlib clone for Jupyter that uses WebGL via Pythreejs
+Matplotlib clone for Jupyter that uses WebGL via Pythreejs.
+
+The goal of this project is to provide a matplotlib-like interface for interactive
+plotting in Jupyter notebooks using WebGL for rendering. This allows for
+efficient handling of large datasets and smooth interactivity.
+
+It tries to follow the matplotlib API as closely as possible, but will never be a
+complete replacement. Instead, it focuses on the most commonly used features
+and provides a familiar interface for users who are already comfortable with
+matplotlib.
+
+Because of the use of Pythreejs, Matplotgl will be able to support native 3D plotting
+out of the box.
 
 ## Installation
 
