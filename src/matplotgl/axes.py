@@ -492,8 +492,8 @@ class Axes(ipw.GridBox):
             left = left[0]
         self._xmin = left
         self._xmax = right
-        self.camera.left = left
-        self.camera.right = right
+        self.camera.left = left - self.camera.position[0]
+        self.camera.right = right - self.camera.position[0]
         self._make_xticks()
 
     def get_ylim(self):
@@ -508,8 +508,8 @@ class Axes(ipw.GridBox):
             bottom = bottom[0]
         self._ymin = bottom
         self._ymax = top
-        self.camera.bottom = bottom
-        self.camera.top = top
+        self.camera.bottom = bottom - self.camera.position[1]
+        self.camera.top = top - self.camera.position[1]
         self._make_yticks()
 
     def get_xticks(self):
