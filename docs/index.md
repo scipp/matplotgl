@@ -28,7 +28,7 @@
   </br></br>
 </div>
 
-The goal of this project is to provide a matplotlib-like interface for interactive plotting in Jupyter notebooks using WebGL for rendering.
+The goal of Matplotgl is to provide a matplotlib-like interface for interactive plotting in Jupyter notebooks using WebGL for rendering.
 This allows for efficient handling of large datasets and smooth interactivity.
 
 It tries to follow the matplotlib API as closely as possible, but will never be a complete replacement.
