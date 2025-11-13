@@ -11,6 +11,110 @@ from .norm import Normalizer
 from .utils import find_limits, fix_empty_range
 
 
+def _maybe_centers_to_edges(coord: np.ndarray, M: int, N: int, axis: str) -> np.ndarray:
+    """
+    Convert cell centers to cell edges if necessary.
+
+    Parameters:
+    - coord: coordinate array (1D or 2D)
+    - M: number of rows of cells
+    - N: number of columns of cells
+    - axis: 'x' or 'y' to indicate which axis this coordinate represents
+
+    For 1D arrays:
+    - x-axis: If length is N, assume centers and convert to edges (N+1)
+    - y-axis: If length is M, assume centers and convert to edges (M+1)
+    - If already N+1 or M+1, assume edges and return as is
+
+    For 2D arrays:
+    - If shape is (M, N), assume centers and convert to edges (M+1, N+1)
+    - If shape is (M+1, N+1), assume already edges and return as is
+    """
+    if coord.ndim not in (1, 2):
+        raise ValueError(f"Coordinate array must be 1D or 2D, got {coord.ndim}D")
+
+    if coord.ndim == 1:
+        expected_centers = N if axis == 'x' else M
+        expected_edges = expected_centers + 1
+
+        if len(coord) == expected_edges:
+            return coord
+
+        if len(coord) == expected_centers:
+            edges = np.zeros(expected_edges, dtype=coord.dtype)
+            # Midpoints between centers, with extrapolation at ends
+            edges[1:-1] = 0.5 * (coord[:-1] + coord[1:])
+            edges[0] = coord[0] - (coord[1] - coord[0]) / 2
+            edges[-1] = coord[-1] + (coord[-1] - coord[-2]) / 2
+            return edges
+
+        raise ValueError(
+            f"1D {axis}-coordinate array has incompatible length "
+            f"{len(coord)}. Expected {expected_centers} (centers) "
+            f"or {expected_edges} (edges)."
+        )
+    elif coord.ndim == 2:
+        m, n = coord.shape
+        if (m, n) == (M + 1, N + 1):
+            return coord
+
+        if (m, n) == (M, N):
+            # Strategy: First pad the coordinate array by extrapolating one
+            # layer of "ghost" cells around the perimeter, then compute all
+            # edges as average of 4 surrounding padded centers
+
+            # Create padded array with shape (M+2, N+2)
+            padded = np.zeros((M + 2, N + 2), dtype=coord.dtype)
+            # Copy original centers to interior
+            padded[1:-1, 1:-1] = coord
+
+            # Extrapolate edges (sides)
+            # Left edge
+            padded[1:-1, 0] = coord[:, 0] - (coord[:, 1] - coord[:, 0])
+            # Right edge
+            padded[1:-1, -1] = coord[:, -1] + (coord[:, -1] - coord[:, -2])
+            # Bottom edge
+            padded[0, 1:-1] = coord[0, :] - (coord[1, :] - coord[0, :])
+            # Top edge
+            padded[-1, 1:-1] = coord[-1, :] + (coord[-1, :] - coord[-2, :])
+
+            # Extrapolate corners
+            # Bottom-left
+            padded[0, 0] = (
+                coord[0, 0] - (coord[1, 0] - coord[0, 0]) - (coord[0, 1] - coord[0, 0])
+            )
+            # Bottom-right
+            padded[0, -1] = (
+                coord[0, -1]
+                - (coord[1, -1] - coord[0, -1])
+                + (coord[0, -1] - coord[0, -2])
+            )
+            # Top-left
+            padded[-1, 0] = (
+                coord[-1, 0]
+                + (coord[-1, 0] - coord[-2, 0])
+                - (coord[-1, 1] - coord[-1, 0])
+            )
+            # Top-right
+            padded[-1, -1] = (
+                coord[-1, -1]
+                + (coord[-1, -1] - coord[-2, -1])
+                + (coord[-1, -1] - coord[-1, -2])
+            )
+
+            # Now compute all edges as average of 4 surrounding padded centers
+            edges = 0.25 * (
+                padded[:-1, :-1] + padded[1:, :-1] + padded[:-1, 1:] + padded[1:, 1:]
+            )
+            return edges
+
+        raise ValueError(
+            f"2D {axis}-coordinate array has incompatible shape "
+            f"{coord.shape}. Expected ({M}, {N}) for centers or "
+            f"({M + 1}, {N + 1}) for edges."
+        )
+
+
 class Mesh:
     def __init__(
         self,
@@ -41,6 +145,10 @@ class Mesh:
         self._x = np.asarray(x)
         self._y = np.asarray(y)
         self._c = np.asarray(c)
+
+        # Convert centers to edges if necessary
+        self._x = _maybe_centers_to_edges(self._x, M, N, axis='x')
+        self._y = _maybe_centers_to_edges(self._y, M, N, axis='y')
 
         self._norm = Normalizer(vmin=np.min(self._c), vmax=np.max(self._c), norm=norm)
         self._cmap = mpl.colormaps[cmap].copy()
@@ -104,10 +212,21 @@ class Mesh:
 
         # Create all four corners for all cells at once
         # Each cell has 4 vertices: bottom-left, bottom-right, top-right, top-left
-        x_left = x[i_flat]
-        x_right = x[i_flat + 1]
-        y_bottom = y[j_flat]
-        y_top = y[j_flat + 1]
+        if x.ndim == 1:
+            x_left = x[i_flat]
+            x_right = x[i_flat + 1]
+        else:
+            # x is 2D: shape (M+1, N+1) for cell corners
+            x_left = x[j_flat, i_flat]
+            x_right = x[j_flat, i_flat + 1]
+
+        if y.ndim == 1:
+            y_bottom = y[j_flat]
+            y_top = y[j_flat + 1]
+        else:
+            # y is 2D: shape (M+1, N+1) for cell corners
+            y_bottom = y[j_flat, i_flat]
+            y_top = y[j_flat + 1, i_flat]
 
         # Build vertices array (n_cells * 4 vertices, each with x, y, z coords)
         vertices = np.zeros((n_cells * 4, 3), dtype=np.float32)
@@ -140,14 +259,16 @@ class Mesh:
         return self._x
 
     def set_xdata(self, x: np.ndarray):
-        self._x = np.asarray(x)
+        M, N = self._c.shape
+        self._x = _maybe_centers_to_edges(np.asarray(x), M, N, axis='x')
         self._update_positions()
 
     def get_ydata(self) -> np.ndarray:
         return self._y
 
     def set_ydata(self, y: np.ndarray):
-        self._y = np.asarray(y)
+        M, N = self._c.shape
+        self._y = _maybe_centers_to_edges(np.asarray(y), M, N, axis='y')
         self._update_positions()
 
     def set_array(self, c: np.ndarray):
