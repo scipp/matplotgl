@@ -38,11 +38,9 @@ def _maybe_centers_to_edges(coord: np.ndarray, M: int, N: int, axis: str) -> np.
         expected_edges = expected_centers + 1
 
         if len(coord) == expected_edges:
-            # Already edges
             return coord
 
         if len(coord) == expected_centers:
-            # Assume centers, convert to edges
             edges = np.zeros(expected_edges, dtype=coord.dtype)
             # Midpoints between centers, with extrapolation at ends
             edges[1:-1] = 0.5 * (coord[:-1] + coord[1:])
@@ -58,11 +56,9 @@ def _maybe_centers_to_edges(coord: np.ndarray, M: int, N: int, axis: str) -> np.
     elif coord.ndim == 2:
         m, n = coord.shape
         if (m, n) == (M + 1, N + 1):
-            # Already edges
             return coord
 
         if (m, n) == (M, N):
-            # Assume centers, convert to edges
             # Strategy: First pad the coordinate array by extrapolating one
             # layer of "ghost" cells around the perimeter, then compute all
             # edges as average of 4 surrounding padded centers
@@ -73,13 +69,13 @@ def _maybe_centers_to_edges(coord: np.ndarray, M: int, N: int, axis: str) -> np.
             padded[1:-1, 1:-1] = coord
 
             # Extrapolate edges (sides)
-            # Left edge: coord[:, 0] - (coord[:, 1] - coord[:, 0])
+            # Left edge
             padded[1:-1, 0] = coord[:, 0] - (coord[:, 1] - coord[:, 0])
-            # Right edge: coord[:, -1] + (coord[:, -1] - coord[:, -2])
+            # Right edge
             padded[1:-1, -1] = coord[:, -1] + (coord[:, -1] - coord[:, -2])
-            # Bottom edge: coord[0, :] - (coord[1, :] - coord[0, :])
+            # Bottom edge
             padded[0, 1:-1] = coord[0, :] - (coord[1, :] - coord[0, :])
-            # Top edge: coord[-1, :] + (coord[-1, :] - coord[-2, :])
+            # Top edge
             padded[-1, 1:-1] = coord[-1, :] + (coord[-1, :] - coord[-2, :])
 
             # Extrapolate corners
@@ -264,9 +260,7 @@ class Mesh:
 
     def set_xdata(self, x: np.ndarray):
         M, N = self._c.shape
-        self._x = np.asarray(x)
-        # Convert centers to edges if necessary
-        self._x = _maybe_centers_to_edges(self._x, M, N, axis='x')
+        self._x = _maybe_centers_to_edges(np.asarray(x), M, N, axis='x')
         self._update_positions()
 
     def get_ydata(self) -> np.ndarray:
@@ -274,9 +268,7 @@ class Mesh:
 
     def set_ydata(self, y: np.ndarray):
         M, N = self._c.shape
-        self._y = np.asarray(y)
-        # Convert centers to edges if necessary
-        self._y = _maybe_centers_to_edges(self._y, M, N, axis='y')
+        self._y = _maybe_centers_to_edges(np.asarray(y), M, N, axis='y')
         self._update_positions()
 
     def set_array(self, c: np.ndarray):
