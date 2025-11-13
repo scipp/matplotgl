@@ -87,9 +87,9 @@ class Points:
         self._yscale = yscale
         self._zorder = zorder
 
-        self._geometry = p3.BufferGeometry(
-            attributes={"position": p3.BufferAttribute(array=self._make_positions())}
-        )
+        geometry_attributes = {
+            "position": p3.BufferAttribute(array=self._make_positions())
+        }
 
         if not isinstance(c, str) or not np.isscalar(s) or marker != "s":
             if isinstance(c, str):
@@ -110,7 +110,7 @@ class Points:
             else:
                 sizes = np.asarray(s, dtype=np.float32)
 
-            self._geometry.attributes.update(
+            geometry_attributes.update(
                 {
                     "customColor": p3.BufferAttribute(array=colors),
                     "size": p3.BufferAttribute(array=sizes),
@@ -125,6 +125,7 @@ class Points:
         else:
             self._material = p3.PointsMaterial(color=cm.to_hex(c), size=s)
 
+        self._geometry = p3.BufferGeometry(attributes=geometry_attributes)
         self._points = p3.Points(geometry=self._geometry, material=self._material)
 
     def _make_positions(self) -> np.ndarray:
