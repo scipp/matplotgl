@@ -11,6 +11,7 @@ from .image import Image
 from .line import Line
 from .mesh import Mesh
 from .points import Points
+from .span import HSpan, VSpan
 from .utils import html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
@@ -62,10 +63,14 @@ class Axes(ipw.GridBox):
 
         # Make background to enable box zoom.
         # Use a size based on limits of the float32 range.
+        # self._background_geometry = p3.PlaneGeometry(
+        #     width=6e38, height=6e38, widthSegments=1, heightSegments=1
+        # )
         self._background_geometry = p3.PlaneGeometry(
-            width=6e38, height=6e38, widthSegments=1, heightSegments=1
+            width=1e3, height=1e03, widthSegments=1, heightSegments=1
         )
-        self._background_material = p3.MeshBasicMaterial(color=self.background_color)
+        # self._background_material = p3.MeshBasicMaterial(color=self.background_color)
+        self._background_material = p3.MeshBasicMaterial(color='red')
         self._background_mesh = p3.Mesh(
             geometry=self._background_geometry,
             material=self._background_material,
@@ -327,10 +332,14 @@ class Axes(ipw.GridBox):
         ymax = None
         for artist in self._artists:
             lims = artist.get_bbox()
-            xmin = _min_with_none(lims["left"], xmin)
-            xmax = _max_with_none(lims["right"], xmax)
-            ymin = _min_with_none(lims["bottom"], ymin)
-            ymax = _max_with_none(lims["top"], ymax)
+            if lims["left"] is not None:
+                xmin = _min_with_none(lims["left"], xmin)
+            if lims["right"] is not None:
+                xmax = _max_with_none(lims["right"], xmax)
+            if lims["bottom"] is not None:
+                ymin = _min_with_none(lims["bottom"], ymin)
+            if lims["top"] is not None:
+                ymax = _max_with_none(lims["top"], ymax)
         self._xmin = (
             xmin
             if xmin is not None
@@ -750,3 +759,29 @@ class Axes(ipw.GridBox):
         self.add_artist(mesh)
         self.autoscale()
         return mesh
+
+    def axvspan(self, xmin, xmax, **kwargs):
+        span = VSpan(
+            xmin=xmin,
+            xmax=xmax,
+            xscale=self.get_xscale(),
+            yscale=self.get_yscale(),
+            **kwargs,
+        )
+        span.axes = self
+        self.add_artist(span)
+        self.autoscale()
+        return span
+
+    def axhspan(self, ymin, ymax, **kwargs):
+        span = HSpan(
+            ymin=ymin,
+            ymax=ymax,
+            xscale=self.get_xscale(),
+            yscale=self.get_yscale(),
+            **kwargs,
+        )
+        span.axes = self
+        self.add_artist(span)
+        self.autoscale()
+        return span
