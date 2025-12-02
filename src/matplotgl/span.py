@@ -22,6 +22,7 @@ class Span:
         zorder=0,
         xscale="linear",
         yscale="linear",
+        alpha=1.0,
     ):
         self.axes = None
         self._xscale = xscale
@@ -33,6 +34,7 @@ class Span:
         self._ymax = ymax
         self._color = color
         self._zorder = zorder
+        self._alpha = alpha
 
         self._geometry = p3.PlaneGeometry(
             width=self._xmax - self._xmin,
@@ -42,7 +44,9 @@ class Span:
         )
 
         # Create material with vertex colors
-        self._material = p3.MeshBasicMaterial(color=cm.to_hex(self._color))
+        self._material = p3.MeshBasicMaterial(
+            color=cm.to_hex(self._color), opacity=self._alpha, transparent=True
+        )
 
         # Create mesh
         self._mesh = p3.Mesh(

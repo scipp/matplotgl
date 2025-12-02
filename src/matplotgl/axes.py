@@ -67,7 +67,7 @@ class Axes(ipw.GridBox):
         #     width=6e38, height=6e38, widthSegments=1, heightSegments=1
         # )
         self._background_geometry = p3.PlaneGeometry(
-            width=1e3, height=1e03, widthSegments=1, heightSegments=1
+            width=1e30, height=1e30, widthSegments=1, heightSegments=1
         )
         # self._background_material = p3.MeshBasicMaterial(color=self.background_color)
         self._background_material = p3.MeshBasicMaterial(color='red')
