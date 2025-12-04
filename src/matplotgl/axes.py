@@ -63,14 +63,10 @@ class Axes(ipw.GridBox):
 
         # Make background to enable box zoom.
         # Use a size based on limits of the float32 range.
-        # self._background_geometry = p3.PlaneGeometry(
-        #     width=6e38, height=6e38, widthSegments=1, heightSegments=1
-        # )
         self._background_geometry = p3.PlaneGeometry(
             width=1e30, height=1e30, widthSegments=1, heightSegments=1
         )
-        # self._background_material = p3.MeshBasicMaterial(color=self.background_color)
-        self._background_material = p3.MeshBasicMaterial(color='red')
+        self._background_material = p3.MeshBasicMaterial(color=self.background_color)
         self._background_mesh = p3.Mesh(
             geometry=self._background_geometry,
             material=self._background_material,
@@ -396,13 +392,6 @@ class Axes(ipw.GridBox):
             )
         ]
 
-        self._margins["topspine"].value = (
-            f'<svg height="{self._thin_margin}px" width="{self.width}">'
-            f'<line x1="0" y1="{self._thin_margin}" x2="{self.width}" '
-            f'y2="{self._thin_margin}" style="stroke:black;stroke-width:'
-            f'{self._spine_linewidth}" />'
-        )
-
         for tick, label in zip(xticks_axes, xlabels, strict=True):
             if tick < 0 or tick > 1.0:
                 continue
@@ -433,6 +422,13 @@ class Axes(ipw.GridBox):
 
         bottom_string.append("</svg></div>")
         self._margins["bottomspine"].value = "".join(bottom_string)
+
+        self._margins["topspine"].value = (
+            f'<svg height="{self._thin_margin}px" width="{self.width}">'
+            f'<line x1="0" y1="{self._thin_margin}" x2="{self.width}" '
+            f'y2="{self._thin_margin}" style="stroke:black;stroke-width:'
+            f'{self._spine_linewidth}" />'
+        )
 
     def _make_yticks(self):
         """
@@ -469,12 +465,6 @@ class Axes(ipw.GridBox):
             )
         ]
 
-        self._margins["rightspine"].value = (
-            f'<svg height="{self.height}" width="{self._thin_margin}">'
-            f'<line x1="0" y1="0" x2="0" y2="{self.height}" '
-            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
-        )
-
         for tick, label in zip(yticks_axes, ytexts, strict=True):
             if tick < 0 or tick > 1.0:
                 continue
@@ -508,6 +498,11 @@ class Axes(ipw.GridBox):
 
         left_string.append("</svg></div>")
         self._margins["leftspine"].value = "".join(left_string)
+        self._margins["rightspine"].value = (
+            f'<svg height="{self.height}" width="{self._thin_margin}">'
+            f'<line x1="0" y1="0" x2="0" y2="{self.height}" '
+            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
+        )
 
     def get_xlim(self):
         return self._xmin, self._xmax
@@ -634,6 +629,13 @@ class Axes(ipw.GridBox):
         self._ax.set(xlim=(self._xmin, self._xmax), ylim=(self._ymin, self._ymax))
         self._make_xticks()
         self._make_yticks()
+        self._notify_artists_limits_changed()
+
+    def _notify_artists_limits_changed(self):
+        for artist in self._artists:
+            artist._on_axes_limits_changed(
+                {"xlim": (self._xmin, self._xmax), "ylim": (self._ymin, self._ymax)}
+            )
 
     def set_figure(self, fig):
         self._fig = fig

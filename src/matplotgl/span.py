@@ -36,12 +36,7 @@ class Span:
         self._zorder = zorder
         self._alpha = alpha
 
-        self._geometry = p3.PlaneGeometry(
-            width=self._xmax - self._xmin,
-            height=self._ymax - self._ymin,
-            widthSegments=1,
-            heightSegments=1,
-        )
+        self._geometry = self._make_geometry()
 
         # Create material with vertex colors
         self._material = p3.MeshBasicMaterial(
@@ -59,9 +54,17 @@ class Span:
             ],
         )
 
+    def _make_geometry(self) -> p3.PlaneGeometry:
+        return p3.PlaneGeometry(
+            width=self._xmax - self._xmin,
+            height=self._ymax - self._ymin,
+            widthSegments=1,
+            heightSegments=1,
+        )
+
     def _update_position(self) -> None:
-        self._geometry.width = self._xmax - self._xmin
-        self._geometry.height = self._ymax - self._ymin
+        self._geometry = self._make_geometry()
+        self._mesh.geometry = self._geometry
         self._mesh.position = [
             0.5 * (self._xmin + self._xmax),
             0.5 * (self._ymin + self._ymax),
@@ -159,6 +162,12 @@ class HSpan(Span):
     def get_bbox(self) -> dict[str, float]:
         return {"left": None, "right": None, "bottom": self._ymin, "top": self._ymax}
 
+    def _on_axes_limits_changed(self, limits) -> None:
+        new_width = 500.0 * (limits["xlim"][1] - limits["xlim"][0])
+        self._xmin = limits["xlim"][0] - new_width
+        self._xmax = limits["xlim"][1] + new_width
+        self._update_position()
+
 
 class VSpan(Span):
     def __init__(self, **kwargs):
@@ -170,3 +179,9 @@ class VSpan(Span):
 
     def get_bbox(self) -> dict[str, float]:
         return {"left": self._xmin, "right": self._xmax, "bottom": None, "top": None}
+
+    def _on_axes_limits_changed(self, limits) -> None:
+        new_height = 500.0 * (limits["ylim"][1] - limits["ylim"][0])
+        self._ymin = limits["ylim"][0] - new_height
+        self._ymax = limits["ylim"][1] + new_height
+        self._update_position()
