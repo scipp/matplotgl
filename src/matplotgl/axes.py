@@ -519,6 +519,7 @@ class Axes(ipw.GridBox):
         self.camera.left = left - self.camera.position[0]
         self.camera.right = right - self.camera.position[0]
         self._make_xticks()
+        self._notify_artists_limits_changed()
 
     def get_ylim(self):
         return self._ymin, self._ymax
@@ -535,6 +536,7 @@ class Axes(ipw.GridBox):
         self.camera.bottom = bottom - self.camera.position[1]
         self.camera.top = top - self.camera.position[1]
         self._make_yticks()
+        self._notify_artists_limits_changed()
 
     def get_xticks(self):
         return self._ax.get_xticks()
