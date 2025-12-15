@@ -64,7 +64,7 @@ class Axes(ipw.GridBox):
         # Make background to enable box zoom.
         # Use a size based on limits of the float32 range.
         self._background_geometry = p3.PlaneGeometry(
-            width=1e30, height=1e30, widthSegments=1, heightSegments=1
+            width=1e30, height=1e30, widthSegments=2, heightSegments=2
         )
         self._background_material = p3.MeshBasicMaterial(color=self.background_color)
         self._background_mesh = p3.Mesh(
@@ -519,7 +519,6 @@ class Axes(ipw.GridBox):
         self.camera.left = left - self.camera.position[0]
         self.camera.right = right - self.camera.position[0]
         self._make_xticks()
-        self._notify_artists_limits_changed()
 
     def get_ylim(self):
         return self._ymin, self._ymax
@@ -536,7 +535,6 @@ class Axes(ipw.GridBox):
         self.camera.bottom = bottom - self.camera.position[1]
         self.camera.top = top - self.camera.position[1]
         self._make_yticks()
-        self._notify_artists_limits_changed()
 
     def get_xticks(self):
         return self._ax.get_xticks()
@@ -631,13 +629,6 @@ class Axes(ipw.GridBox):
         self._ax.set(xlim=(self._xmin, self._xmax), ylim=(self._ymin, self._ymax))
         self._make_xticks()
         self._make_yticks()
-        self._notify_artists_limits_changed()
-
-    def _notify_artists_limits_changed(self):
-        for artist in self._artists:
-            artist._on_axes_limits_changed(
-                {"xlim": (self._xmin, self._xmax), "ylim": (self._ymin, self._ymax)}
-            )
 
     def set_figure(self, fig):
         self._fig = fig

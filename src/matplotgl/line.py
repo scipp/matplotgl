@@ -115,6 +115,3 @@ class Line:
     def _set_yscale(self, scale):
         self._yscale = scale
         self._update()
-
-    def _on_axes_limits_changed(self, _) -> None:
-        pass

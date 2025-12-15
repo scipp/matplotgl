@@ -212,6 +212,3 @@ class Points:
         self._update_colors()
         if self._colorbar is not None:
             self._colorbar.update()
-
-    def _on_axes_limits_changed(self, _) -> None:
-        pass

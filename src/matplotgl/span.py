@@ -1,14 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
-import warnings
-
-import matplotlib as mpl
 import matplotlib.colors as cm
 import numpy as np
 import pythreejs as p3
-
-from .norm import Normalizer
-from .utils import find_limits, fix_empty_range
 
 
 class Span:
@@ -58,8 +52,8 @@ class Span:
         return p3.PlaneGeometry(
             width=self._xmax - self._xmin,
             height=self._ymax - self._ymin,
-            widthSegments=1,
-            heightSegments=1,
+            widthSegments=2,
+            heightSegments=2,
         )
 
     def _update_position(self) -> None:
@@ -73,14 +67,6 @@ class Span:
 
     def _update_color(self) -> None:
         self._material.color = cm.to_hex(self._color)
-
-    # def get_bbox(self) -> dict[str, float]:
-    #     return {
-    #         "left": self._xmin,
-    #         "right": self._xmax,
-    #         "bottom": self._ymin,
-    #         "top": self._ymax,
-    #     }
 
     def _as_object3d(self) -> p3.Object3D:
         return self._mesh
@@ -154,34 +140,22 @@ class Span:
 class HSpan(Span):
     def __init__(self, **kwargs):
         super().__init__(
-            xmin=-1e3,
-            xmax=1e3,
+            xmin=-1e30,
+            xmax=1e30,
             **{k: v for k, v in kwargs.items() if k not in ('xmin', 'xmax')},
         )
 
     def get_bbox(self) -> dict[str, float]:
         return {"left": None, "right": None, "bottom": self._ymin, "top": self._ymax}
 
-    def _on_axes_limits_changed(self, limits) -> None:
-        new_width = 500.0 * (limits["xlim"][1] - limits["xlim"][0])
-        self._xmin = limits["xlim"][0] - new_width
-        self._xmax = limits["xlim"][1] + new_width
-        self._update_position()
-
 
 class VSpan(Span):
     def __init__(self, **kwargs):
         super().__init__(
-            ymin=-1e3,
-            ymax=1e3,
+            ymin=-1e30,
+            ymax=1e30,
             **{k: v for k, v in kwargs.items() if k not in ('ymin', 'ymax')},
         )
 
     def get_bbox(self) -> dict[str, float]:
         return {"left": self._xmin, "right": self._xmax, "bottom": None, "top": None}
-
-    def _on_axes_limits_changed(self, limits) -> None:
-        new_height = 500.0 * (limits["ylim"][1] - limits["ylim"][0])
-        self._ymin = limits["ylim"][0] - new_height
-        self._ymax = limits["ylim"][1] + new_height
-        self._update_position()
