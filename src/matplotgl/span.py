@@ -4,6 +4,8 @@ import matplotlib.colors as cm
 import numpy as np
 import pythreejs as p3
 
+from .utils import FLOAT32_LIMIT
+
 
 class Span:
     def __init__(
@@ -140,8 +142,8 @@ class Span:
 class HSpan(Span):
     def __init__(self, **kwargs):
         super().__init__(
-            xmin=-1e30,
-            xmax=1e30,
+            xmin=-FLOAT32_LIMIT,
+            xmax=FLOAT32_LIMIT,
             **{k: v for k, v in kwargs.items() if k not in ('xmin', 'xmax')},
         )
 
@@ -152,8 +154,8 @@ class HSpan(Span):
 class VSpan(Span):
     def __init__(self, **kwargs):
         super().__init__(
-            ymin=-1e30,
-            ymax=1e30,
+            ymin=-FLOAT32_LIMIT,
+            ymax=FLOAT32_LIMIT,
             **{k: v for k, v in kwargs.items() if k not in ('ymin', 'ymax')},
         )
 
