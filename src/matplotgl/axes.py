@@ -12,7 +12,7 @@ from .line import Line
 from .mesh import Mesh
 from .points import Points
 from .span import HSpan, VSpan
-from .utils import html_to_svg, latex_to_html, FLOAT32_LIMIT
+from .utils import FLOAT32_LIMIT, html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
 
@@ -64,7 +64,10 @@ class Axes(ipw.GridBox):
         # Make background to enable box zoom.
         # Use a size based on limits of the float32 range.
         self._background_geometry = p3.PlaneGeometry(
-            width=2*FLOAT32_LIMIT, height=2*FLOAT32_LIMIT, widthSegments=2, heightSegments=2
+            width=2 * FLOAT32_LIMIT,
+            height=2 * FLOAT32_LIMIT,
+            widthSegments=2,
+            heightSegments=2,
         )
         self._background_material = p3.MeshBasicMaterial(color=self.background_color)
         self._background_mesh = p3.Mesh(
