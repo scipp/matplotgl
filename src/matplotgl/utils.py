@@ -4,8 +4,8 @@ from typing import Literal
 import numpy as np
 import pythreejs as p3
 
-
 FLOAT32_LIMIT = 1.0e36
+
 
 def value_to_string(val, precision: int = 3) -> str:
     """
