@@ -11,7 +11,8 @@ from .image import Image
 from .line import Line
 from .mesh import Mesh
 from .points import Points
-from .utils import html_to_svg, latex_to_html
+from .span import HSpan, VSpan
+from .utils import FLOAT32_LIMIT, html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
 
@@ -63,7 +64,10 @@ class Axes(ipw.GridBox):
         # Make background to enable box zoom.
         # Use a size based on limits of the float32 range.
         self._background_geometry = p3.PlaneGeometry(
-            width=6e38, height=6e38, widthSegments=1, heightSegments=1
+            width=2 * FLOAT32_LIMIT,
+            height=2 * FLOAT32_LIMIT,
+            widthSegments=2,
+            heightSegments=2,
         )
         self._background_material = p3.MeshBasicMaterial(color=self.background_color)
         self._background_mesh = p3.Mesh(
@@ -327,10 +331,14 @@ class Axes(ipw.GridBox):
         ymax = None
         for artist in self._artists:
             lims = artist.get_bbox()
-            xmin = _min_with_none(lims["left"], xmin)
-            xmax = _max_with_none(lims["right"], xmax)
-            ymin = _min_with_none(lims["bottom"], ymin)
-            ymax = _max_with_none(lims["top"], ymax)
+            if lims["left"] is not None:
+                xmin = _min_with_none(lims["left"], xmin)
+            if lims["right"] is not None:
+                xmax = _max_with_none(lims["right"], xmax)
+            if lims["bottom"] is not None:
+                ymin = _min_with_none(lims["bottom"], ymin)
+            if lims["top"] is not None:
+                ymax = _max_with_none(lims["top"], ymax)
         self._xmin = (
             xmin
             if xmin is not None
@@ -387,13 +395,6 @@ class Axes(ipw.GridBox):
             )
         ]
 
-        self._margins["topspine"].value = (
-            f'<svg height="{self._thin_margin}px" width="{self.width}">'
-            f'<line x1="0" y1="{self._thin_margin}" x2="{self.width}" '
-            f'y2="{self._thin_margin}" style="stroke:black;stroke-width:'
-            f'{self._spine_linewidth}" />'
-        )
-
         for tick, label in zip(xticks_axes, xlabels, strict=True):
             if tick < 0 or tick > 1.0:
                 continue
@@ -424,6 +425,13 @@ class Axes(ipw.GridBox):
 
         bottom_string.append("</svg></div>")
         self._margins["bottomspine"].value = "".join(bottom_string)
+
+        self._margins["topspine"].value = (
+            f'<svg height="{self._thin_margin}px" width="{self.width}">'
+            f'<line x1="0" y1="{self._thin_margin}" x2="{self.width}" '
+            f'y2="{self._thin_margin}" style="stroke:black;stroke-width:'
+            f'{self._spine_linewidth}" />'
+        )
 
     def _make_yticks(self):
         """
@@ -460,12 +468,6 @@ class Axes(ipw.GridBox):
             )
         ]
 
-        self._margins["rightspine"].value = (
-            f'<svg height="{self.height}" width="{self._thin_margin}">'
-            f'<line x1="0" y1="0" x2="0" y2="{self.height}" '
-            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
-        )
-
         for tick, label in zip(yticks_axes, ytexts, strict=True):
             if tick < 0 or tick > 1.0:
                 continue
@@ -499,6 +501,11 @@ class Axes(ipw.GridBox):
 
         left_string.append("</svg></div>")
         self._margins["leftspine"].value = "".join(left_string)
+        self._margins["rightspine"].value = (
+            f'<svg height="{self.height}" width="{self._thin_margin}">'
+            f'<line x1="0" y1="0" x2="0" y2="{self.height}" '
+            f'style="stroke:black;stroke-width:{self._spine_linewidth}" />'
+        )
 
     def get_xlim(self):
         return self._xmin, self._xmax
@@ -750,3 +757,29 @@ class Axes(ipw.GridBox):
         self.add_artist(mesh)
         self.autoscale()
         return mesh
+
+    def axvspan(self, xmin, xmax, **kwargs):
+        span = VSpan(
+            xmin=xmin,
+            xmax=xmax,
+            xscale=self.get_xscale(),
+            yscale=self.get_yscale(),
+            **kwargs,
+        )
+        span.axes = self
+        self.add_artist(span)
+        self.autoscale()
+        return span
+
+    def axhspan(self, ymin, ymax, **kwargs):
+        span = HSpan(
+            ymin=ymin,
+            ymax=ymax,
+            xscale=self.get_xscale(),
+            yscale=self.get_yscale(),
+            **kwargs,
+        )
+        span.axes = self
+        self.add_artist(span)
+        self.autoscale()
+        return span
