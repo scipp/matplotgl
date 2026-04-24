@@ -55,6 +55,8 @@ class Axes(ipw.GridBox):
         self._ymax = 1.0
         self._fig = None
         self._spine_linewidth = 1.0
+        self._yaxis_width = None
+        self._xaxis_height = None
         self._ax = ax
         self._artists = []
         self.lines = []
@@ -454,10 +456,14 @@ class Axes(ipw.GridBox):
         # Predict width of the left margin based on the longest label
         # Need to convert to integer to avoid sub-pixel rendering issues
         max_length = math.ceil(max(lab.get_tightbbox().width for lab in ylabels))
-        width_px = max_length + tick_length + label_offset
-        width1_px = max_length + label_offset
-        width2_px = max_length
-        width3_px = max_length + int(tick_length * 0.3) + label_offset
+        if self._yaxis_width is None:
+            self._yaxis_width = max_length
+        else:
+            self._yaxis_width = max(self._yaxis_width, max_length)
+        width_px = self._yaxis_width + tick_length + label_offset
+        width1_px = self._yaxis_width + label_offset
+        width2_px = self._yaxis_width
+        width3_px = self._yaxis_width + int(tick_length * 0.3) + label_offset
 
         left_string = [
             (
