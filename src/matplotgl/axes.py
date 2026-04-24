@@ -5,6 +5,7 @@ import math
 import ipywidgets as ipw
 import numpy as np
 import pythreejs as p3
+from IPython.display import display
 from matplotlib.axes import Axes as MplAxes
 
 from .image import Image
@@ -13,7 +14,7 @@ from .mesh import Mesh
 from .points import Points
 from .span import HSpan, VSpan
 from .utils import FLOAT32_LIMIT, html_to_svg, latex_to_html
-from .widgets import ClickableHTML
+from .widgets import CanvasOverlay, ClickableHTML
 
 
 def _min_with_none(a, b):
@@ -61,44 +62,44 @@ class Axes(ipw.GridBox):
         self.collections = []
         self.images = []
 
-        # Make background to enable box zoom.
-        # Use a size based on limits of the float32 range.
-        self._background_geometry = p3.PlaneGeometry(
-            width=2 * FLOAT32_LIMIT,
-            height=2 * FLOAT32_LIMIT,
-            widthSegments=2,
-            heightSegments=2,
-        )
-        self._background_material = p3.MeshBasicMaterial(color=self.background_color)
-        self._background_mesh = p3.Mesh(
-            geometry=self._background_geometry,
-            material=self._background_material,
-            position=(0, 0, -101),
-        )
+        # # Make background to enable box zoom.
+        # # Use a size based on limits of the float32 range.
+        # self._background_geometry = p3.PlaneGeometry(
+        #     width=2 * FLOAT32_LIMIT,
+        #     height=2 * FLOAT32_LIMIT,
+        #     widthSegments=2,
+        #     heightSegments=2,
+        # )
+        # self._background_material = p3.MeshBasicMaterial(color=self.background_color)
+        # self._background_mesh = p3.Mesh(
+        #     geometry=self._background_geometry,
+        #     material=self._background_material,
+        #     position=(0, 0, -101),
+        # )
 
-        self._mouse_cursor_picker = p3.Picker(
-            controlling=self._background_mesh, event="mousemove"
-        )
-        self._mouse_cursor_picker.observe(self._update_cursor_position, names=["point"])
+        # self._mouse_cursor_picker = p3.Picker(
+        #     controlling=self._background_mesh, event="mousemove"
+        # )
+        # self._mouse_cursor_picker.observe(self._update_cursor_position, names=["point"])
 
-        self._zoom_down_picker = p3.Picker(
-            controlling=self._background_mesh, event="mousedown"
-        )
-        self._zoom_up_picker = p3.Picker(
-            controlling=self._background_mesh, event="mouseup"
-        )
-        self._zoom_move_picker = p3.Picker(
-            controlling=self._background_mesh, event="mousemove"
-        )
+        # self._zoom_down_picker = p3.Picker(
+        #     controlling=self._background_mesh, event="mousedown"
+        # )
+        # self._zoom_up_picker = p3.Picker(
+        #     controlling=self._background_mesh, event="mouseup"
+        # )
+        # self._zoom_move_picker = p3.Picker(
+        #     controlling=self._background_mesh, event="mousemove"
+        # )
 
-        rect_pos = np.zeros((5, 3), dtype="float32")
-        rect_pos[:, 2] = 101.0
-        self._zoom_rect_geometry = p3.LineGeometry(positions=rect_pos)
-        self._zoom_rect_line = p3.Line2(
-            geometry=self._zoom_rect_geometry,
-            material=p3.LineMaterial(color="black", linewidth=1.5),
-            visible=False,
-        )
+        # rect_pos = np.zeros((5, 3), dtype="float32")
+        # rect_pos[:, 2] = 101.0
+        # self._zoom_rect_geometry = p3.LineGeometry(positions=rect_pos)
+        # self._zoom_rect_line = p3.Line2(
+        #     geometry=self._zoom_rect_geometry,
+        #     material=p3.LineMaterial(color="black", linewidth=1.5),
+        #     visible=False,
+        # )
 
         self.camera = p3.OrthographicCamera(
             -0.001, 1.0, 1.0, -0.001, -1, 300, position=[0, 0, 102]
@@ -106,7 +107,8 @@ class Axes(ipw.GridBox):
         self.camera.observe(self._on_camera_position_change, names=["position"])
 
         self.scene = p3.Scene(
-            children=[self.camera, self._background_mesh, self._zoom_rect_line],
+            # children=[self.camera, self._background_mesh, self._zoom_rect_line],
+            children=[self.camera],
             background=self.background_color,
         )
 
@@ -116,7 +118,8 @@ class Axes(ipw.GridBox):
             enablePan=False,
             enableRotate=False,
         )
-        self._base_controls = [self.controls, self._mouse_cursor_picker]
+        # self._base_controls = [self.controls, self._mouse_cursor_picker]
+        self._base_controls = [self.controls]
         self.renderer = p3.Renderer(
             camera=self.camera,
             scene=self.scene,
@@ -134,14 +137,14 @@ class Axes(ipw.GridBox):
         # Tool state: 'zoom' or 'pan'
         self._active_tool = None
 
-        # Pan state tracking
-        self._pan_mouse_down = False
-        self._pan_start_x = None
-        self._pan_start_y = None
-        self._pan_camera_left = None
-        self._pan_camera_right = None
-        self._pan_camera_bottom = None
-        self._pan_camera_top = None
+        # # Pan state tracking
+        # self._pan_mouse_down = False
+        # self._pan_start_x = None
+        # self._pan_start_y = None
+        # self._pan_camera_left = None
+        # self._pan_camera_right = None
+        # self._pan_camera_bottom = None
+        # self._pan_camera_top = None
 
         # self._margin_with_ticks = 50
         self._thin_margin = 3
@@ -192,10 +195,16 @@ class Axes(ipw.GridBox):
         self._margins['leftspine'].on_dblclick(self._toggle_yscale)
         self._margins['bottomspine'].on_dblclick(self._toggle_xscale)
 
+        self.overlay = CanvasOverlay(
+            renderer=self.renderer, width=600, height=400, box_color='#ff00ff'
+        )
+
+        display(self.renderer)
+
         super().__init__(
             children=[
                 *self._margins.values(),
-                self.renderer,
+                self.overlay,
             ],
             layout=ipw.Layout(
                 grid_template_columns="auto" * 5,
@@ -212,6 +221,16 @@ class Axes(ipw.GridBox):
                 margin="0",
             ),
         )
+
+    def _repr_mimebundle_(self, include=None, exclude=None):
+        print("IN _repr_mimebundle_")
+        assert False
+        return super()._repr_mimebundle_(include, exclude)
+
+    def _repr_html_(self):
+        print("IN _repr_html_")
+        assert False
+        return super()._repr_html_()
 
     def _update_cursor_position(self, change):
         x, y, _ = change["new"]
@@ -638,8 +657,8 @@ class Axes(ipw.GridBox):
         # self._dpi = fig._dpi
         self.width = self._fig.width // self._fig._ncols
         self.height = self._fig.height // self._fig._nrows
-        self.renderer.layout.height = f"{self.height}px"
-        self.renderer.layout.width = f"{self.width}px"
+        # self.renderer.layout.height = f"{self.height}px"
+        # self.renderer.layout.width = f"{self.width}px"
         self._make_xticks()
         self._make_yticks()
 
