@@ -17,11 +17,14 @@ class Line:
         fmt="-",
         color="C0",
         ls="solid",
-        lw=1,
+        lw=2,
         ms=5,
         zorder=0,
         xscale="linear",
         yscale="linear",
+        linestyle=None,
+        linewidth=None,
+        **ignored,
     ):
         self.axes = None
         self._xscale = xscale
@@ -31,6 +34,9 @@ class Line:
         self._zorder = zorder
         pos = self._make_positions()
         self._line_geometry = p3.LineGeometry(positions=pos)
+
+        lw = linewidth or lw
+        ls = linestyle or ls
 
         self._color = mplc.to_hex(color)
         self._line = None
