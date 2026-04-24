@@ -514,10 +514,16 @@ class Axes(ipw.GridBox):
         )
 
     def get_xlim(self):
+        if self.get_xscale() == "log":
+            return 10.0**self._xmin, 10.0**self._xmax
         return self._xmin, self._xmax
 
     def set_xlim(self, left, right=None):
         self._ax.set_xlim(left, right)
+        if self.get_xscale() == "log":
+            left = np.log10(left)
+            if right is not None:
+                right = np.log10(right)
         self._zoom_limits.pop("xmin", None)
         self._zoom_limits.pop("xmax", None)
         if right is None:
@@ -530,10 +536,16 @@ class Axes(ipw.GridBox):
         self._make_xticks()
 
     def get_ylim(self):
+        if self.get_yscale() == "log":
+            return 10.0**self._ymin, 10.0**self._ymax
         return self._ymin, self._ymax
 
     def set_ylim(self, bottom, top=None):
         self._ax.set_ylim(bottom, top)
+        if self.get_yscale() == "log":
+            bottom = np.log10(bottom)
+            if top is not None:
+                top = np.log10(top)
         self._zoom_limits.pop("ymin", None)
         self._zoom_limits.pop("ymax", None)
         if top is None:

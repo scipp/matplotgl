@@ -11,10 +11,10 @@ from .widgets import VBar
 matplotlib.use("Agg")  # Headless backend
 
 
-def subplots(nrows=1, ncols=1, **kwargs):
+def subplots(nrows=1, ncols=1, toolbar=True, **kwargs):
     mpl_figure = MplFigure(**kwargs)
 
-    fig = Figure(nrows=nrows, ncols=ncols, **kwargs)
+    fig = Figure(nrows=nrows, ncols=ncols, toolbar=toolbar, **kwargs)
     axs = []
     for j in range(ncols):
         column = []

@@ -14,18 +14,28 @@ class Line:
         self,
         x,
         y,
-        fmt="-",
-        color="C0",
-        ls="solid",
-        lw=2,
-        ms=5,
-        zorder=0,
-        xscale="linear",
-        yscale="linear",
+        fmt=None,
+        color=None,
+        ls=None,
+        lw=None,
+        ms=None,
+        marker=None,
+        zorder=None,
+        xscale=None,
+        yscale=None,
         linestyle=None,
         linewidth=None,
         **ignored,
     ):
+        fmt = fmt or "-"
+        color = color or "C0"
+        ls = ls or "solid"
+        lw = lw or 2
+        ms = ms or 5
+        zorder = zorder or 0
+        xscale = xscale or "linear"
+        yscale = yscale or "linear"
+
         self.axes = None
         self._xscale = xscale
         self._yscale = yscale
@@ -41,7 +51,8 @@ class Line:
         self._color = mplc.to_hex(color)
         self._line = None
         self._vertices = None
-        if "-" in fmt:
+
+        if ("-" in fmt) and (ls != "none"):
             if ls == "solid":
                 self._line_material = p3.LineMaterial(color=self._color, linewidth=lw)
             elif ls == "dashed":
@@ -50,7 +61,7 @@ class Line:
                 geometry=self._line_geometry, material=self._line_material
             )
 
-        if "o" in fmt:
+        if ("o" in fmt) or (marker is not None):
             self._vertices_geometry = p3.BufferGeometry(
                 attributes={
                     "position": p3.BufferAttribute(array=pos),

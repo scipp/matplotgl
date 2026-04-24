@@ -6,10 +6,10 @@ from .widgets import HBar
 
 
 class Figure(HBar):
-    def __init__(self, *, figsize=(5.0, 3.5), dpi=96, nrows=1, ncols=1) -> None:
+    def __init__(self, *, figsize=None, dpi=96, nrows=1, ncols=1, toolbar=True) -> None:
         self.axes = []
         self._dpi = dpi
-        self._figsize = figsize
+        self._figsize = figsize if figsize is not None else (5.0, 3.5)
         self._nrows = nrows
         self._ncols = ncols
         self.width = self._figsize[0] * self._dpi
@@ -20,16 +20,17 @@ class Figure(HBar):
         self.toolbar._zoom.observe(self.toggle_zoom, names="value")
         self.toolbar._pan.observe(self.toggle_pan, names="value")
 
-        super().__init__([self.toolbar])
+        super().__init__([self.toolbar] if toolbar else [])
 
     def home(self, *args):
         for ax in self.axes:
             ax.autoscale()
             # ax.reset()
 
-    def toggle_zoom(self, change):
+    def toggle_zoom(self, _=None):
         for ax in self.axes:
-            if change["new"]:
+            # print(f"Toggling zoom for {ax}", self.toolbar._zoom.value, change["new"])
+            if ax._active_tool != "zoom":
                 ax._zoom_down_picker.observe(ax.on_mouse_down, names=["point"])
                 ax._zoom_up_picker.observe(ax.on_mouse_up, names=["point"])
                 ax._zoom_move_picker.observe(ax.on_mouse_move, names=["point"])
@@ -49,15 +50,23 @@ class Figure(HBar):
                 ax.renderer.controls = ax._base_controls
                 ax._active_tool = None
 
-    def toggle_pan(self, change):
+    def toggle_pan(self, _=None):
         for ax in self.axes:
-            ax.controls.enablePan = change["new"]
-            if change["new"]:
+            activate = ax._active_tool != "pan"
+            ax.controls.enablePan = activate
+            if activate:
                 if self.toolbar._zoom.value:
                     self.toolbar._zoom.value = False
                 ax._active_tool = "pan"
             else:
                 ax._active_tool = None
+
+    def reset_panzoom(self):
+        for ax in self.axes:
+            if ax._active_tool == "zoom":
+                self.toggle_zoom()
+            elif ax._active_tool == "pan":
+                self.toggle_pan()
 
     # def toggle_pickers(self, change):
     #     for ax in self.axes:
