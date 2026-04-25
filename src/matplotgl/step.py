@@ -9,17 +9,16 @@ from matplotlib import colors as mplc
 from .utils import find_limits, fix_empty_range
 
 
-class Line:
+class Step:
     def __init__(
         self,
         x,
         y,
-        fmt=None,
+        *,
+        where=None,
         color=None,
         ls=None,
         lw=None,
-        ms=None,
-        marker=None,
         zorder=None,
         xscale=None,
         yscale=None,
@@ -28,11 +27,10 @@ class Line:
         alpha=None,
         **ignored,
     ):
-        fmt = fmt or "-"
+        self.where = (where or "pre").lower()
         color = color or "C0"
         ls = ls or "solid"
         lw = lw or 2
-        ms = ms or 5
         zorder = zorder or 0
         xscale = xscale or "linear"
         yscale = yscale or "linear"
@@ -54,36 +52,19 @@ class Line:
         self._line = None
         self._vertices = None
 
-        if ("-" in fmt) and (ls != "none"):
-            if ls == "solid":
-                self._line_material = p3.LineMaterial(
-                    color=self._color,
-                    linewidth=lw,
-                    # TODO: it seems opacity in LineMaterial does not work in pythreejs?
-                    opacity=alpha,
-                    transparent=alpha < 1.0,
-                )
-            elif ls == "dashed":
-                raise NotImplementedError("Dashed lines are not yet implemented")
-            self._line = p3.Line2(
-                geometry=self._line_geometry, material=self._line_material
-            )
-
-        if ("o" in fmt) or (marker is not None):
-            self._vertices_geometry = p3.BufferGeometry(
-                attributes={
-                    "position": p3.BufferAttribute(array=pos),
-                }
-            )
-            self._vertices_material = p3.PointsMaterial(
+        if ls == "solid":
+            self._line_material = p3.LineMaterial(
                 color=self._color,
-                size=ms,
+                linewidth=lw,
+                # TODO: it seems opacity in LineMaterial does not work in pythreejs?
                 opacity=alpha,
                 transparent=alpha < 1.0,
             )
-            self._vertices = p3.Points(
-                geometry=self._vertices_geometry, material=self._vertices_material
-            )
+        elif ls == "dashed":
+            raise NotImplementedError("Dashed lines are not yet implemented")
+        self._line = p3.Line2(
+            geometry=self._line_geometry, material=self._line_material
+        )
 
     def get_bbox(self):
         pad = 0.03
@@ -92,17 +73,29 @@ class Line:
         return {"left": left, "right": right, "bottom": bottom, "top": top}
 
     def _as_object3d(self) -> p3.Object3D:
-        out = []
-        if self._line is not None:
-            out.append(self._line)
-        if self._vertices is not None:
-            out.append(self._vertices)
-        return p3.Group(children=out) if len(out) > 1 else out[0]
+        return self._line
 
     def _make_positions(self):
         with warnings.catch_warnings(category=RuntimeWarning, action="ignore"):
             xx = self._x if self._xscale == "linear" else np.log10(self._x)
             yy = self._y if self._yscale == "linear" else np.log10(self._y)
+
+        match self.where:
+            case "pre":
+                xx = np.repeat(xx, 2)[:-1]
+                yy = np.repeat(yy, 2)[1:]
+            case "post":
+                xx = np.repeat(xx, 2)[1:]
+                yy = np.repeat(yy, 2)[:-1]
+            case "mid":
+                x1 = 0.5 * (xx[:-1] + xx[1:])
+                xx = np.concatenate(
+                    [np.atleast_1d(xx[0]), np.repeat(x1, 2), np.atleast_1d(xx[-1])]
+                )
+                yy = np.repeat(yy, 2)
+            case _:
+                raise ValueError(f"Invalid where: {self.where}")
+
         pos = np.array(
             [xx, yy, np.full_like(xx, self._zorder)],
             dtype="float32",
@@ -110,11 +103,7 @@ class Line:
         return pos
 
     def _update(self):
-        pos = self._make_positions()
-        if self._line is not None:
-            self._line_geometry.positions = pos
-        if self._vertices is not None:
-            self._vertices_geometry.attributes["position"].array = pos
+        self._line_geometry.positions = self._make_positions()
 
     def get_xdata(self) -> np.ndarray:
         return self._x

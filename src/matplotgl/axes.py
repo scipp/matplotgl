@@ -12,6 +12,7 @@ from .line import Line
 from .mesh import Mesh
 from .points import Points
 from .span import HSpan, VSpan
+from .step import Step
 from .utils import FLOAT32_LIMIT, html_to_svg, latex_to_html
 from .widgets import ClickableHTML
 
@@ -730,7 +731,23 @@ class Axes(ipw.GridBox):
         self.lines.append(line)
         self.add_artist(line)
         self.autoscale()
-        return line
+        return [line]
+
+    def step(self, *args, color=None, **kwargs):
+        if color is None:
+            color = f"C{len(self.lines)}"
+        line = Step(
+            *args,
+            color=color,
+            xscale=self.get_xscale(),
+            yscale=self.get_yscale(),
+            **kwargs,
+        )
+        line.axes = self
+        self.lines.append(line)
+        self.add_artist(line)
+        self.autoscale()
+        return [line]
 
     def semilogx(self, *args, **kwargs):
         out = self.plot(*args, **kwargs)
