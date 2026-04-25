@@ -77,7 +77,7 @@ def find_limits(
     # v = x.values
     finite_inds = np.isfinite(x)
     if np.sum(finite_inds) == 0:
-        raise ValueError("No finite values were found in array. Cannot compute limits.")
+        return None, None
     finite_vals = x[finite_inds]
     finite_max = None
     if scale == "log":
@@ -111,7 +111,7 @@ def fix_empty_range(
     """
     Range correction in case xmin == xmax
     """
-    if lims[0] != lims[1]:
+    if (None in lims) or (lims[0] != lims[1]):
         return lims
     if lims[0] == 0.0:
         dx = 0.5

@@ -150,3 +150,10 @@ class Step:
     def set_zorder(self, zorder):
         self._zorder = zorder
         self._update()
+
+    def get_color(self):
+        return self._color
+
+    def set_color(self, color):
+        self._color = mplc.to_hex(color)
+        self._line_material.color = self._color
