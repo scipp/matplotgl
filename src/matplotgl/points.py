@@ -71,15 +71,25 @@ class Points:
         self,
         x,
         y,
-        c="C0",
-        s=3,
-        marker="s",
-        zorder=0,
-        cmap="viridis",
-        norm: str = "linear",
-        xscale="linear",
-        yscale="linear",
+        c=None,
+        s=None,
+        marker=None,
+        zorder=None,
+        cmap=None,
+        norm: str = None,
+        xscale=None,
+        yscale=None,
+        **ignored,
     ) -> None:
+        c = c or "C0"
+        s = s or 5
+        marker = marker or "s"
+        zorder = zorder or 0
+        cmap = cmap or "viridis"
+        norm: str = norm or "linear"
+        xscale = xscale or "linear"
+        yscale = yscale or "linear"
+
         self.axes = None
         self._x = np.asarray(x)
         self._y = np.asarray(y)
@@ -212,3 +222,15 @@ class Points:
         self._update_colors()
         if self._colorbar is not None:
             self._colorbar.update()
+
+    def get_zorder(self):
+        return self._zorder
+
+    def set_zorder(self, zorder):
+        self._zorder = zorder
+        self._update_positions()
+
+    # def get_color(self):
+    #     return self._color
+
+    # def set_color(self, color):
