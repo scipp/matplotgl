@@ -28,39 +28,39 @@ class Step:
         **ignored,
     ):
         self.where = (where or "pre").lower()
-        color = color or "C0"
-        ls = ls or "solid"
-        lw = lw or 2
-        zorder = zorder or 0
-        xscale = xscale or "linear"
-        yscale = yscale or "linear"
-        alpha = alpha or 1.0
+        self._color = mplc.to_hex(color or "C0")
+        self._linewidth = linewidth or (lw or 2)
+        self._linestyle = linestyle or (ls or "solid")
+        self._zorder = zorder or 0
+        self._xscale = xscale or "linear"
+        self._yscale = yscale or "linear"
+        self._alpha = alpha or 1.0
 
         self.axes = None
-        self._xscale = xscale
-        self._yscale = yscale
+        # self._xscale = xscale
+        # self._yscale = yscale
         self._x = np.asarray(x)
         self._y = np.asarray(y)
         self._zorder = zorder
         pos = self._make_positions()
         self._line_geometry = p3.LineGeometry(positions=pos)
 
-        lw = linewidth or lw
-        ls = linestyle or ls
+        # lw = linewidth or lw
+        # ls = linestyle or ls
 
-        self._color = mplc.to_hex(color)
+        # self._color = mplc.to_hex(color)
         self._line = None
         self._vertices = None
 
-        if ls == "solid":
+        if self._linestyle == "solid":
             self._line_material = p3.LineMaterial(
                 color=self._color,
-                linewidth=lw,
+                linewidth=self._linewidth,
                 # TODO: it seems opacity in LineMaterial does not work in pythreejs?
-                opacity=alpha,
-                transparent=alpha < 1.0,
+                opacity=self._alpha,
+                transparent=self._alpha < 1.0,
             )
-        elif ls == "dashed":
+        elif self._linestyle == "dashed":
             raise NotImplementedError("Dashed lines are not yet implemented")
         self._line = p3.Line2(
             geometry=self._line_geometry, material=self._line_material
@@ -157,3 +157,13 @@ class Step:
     def set_color(self, color):
         self._color = mplc.to_hex(color)
         self._line_material.color = self._color
+
+    def get_linestyle(self):
+        return self._linestyle
+
+    def get_linewidth(self):
+        return self._linewidth
+
+    def set(self, **kwargs):
+        for key, value in kwargs.items():
+            getattr(self, f"set_{key}")(value)
