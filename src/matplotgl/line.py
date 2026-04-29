@@ -27,6 +27,7 @@ class Line:
         linewidth=None,
         markersize=None,
         alpha=None,
+        visible=None,
         **ignored,
     ):
         self._color = mplc.to_hex(color or "C0")
@@ -40,13 +41,13 @@ class Line:
         self._xscale = xscale or "linear"
         self._yscale = yscale or "linear"
         self._alpha = alpha or 1.0
+        visible = visible if visible is not None else True
 
         self.axes = None
         # self._xscale = xscale
         # self._yscale = yscale
         self._x = np.asarray(x)
         self._y = np.asarray(y)
-        self._zorder = zorder
         pos = self._make_positions()
         self._line_geometry = p3.LineGeometry(positions=pos)
 
@@ -68,8 +69,11 @@ class Line:
                 )
             elif self._linestyle == "dashed":
                 raise NotImplementedError("Dashed lines are not yet implemented")
+
             self._line = p3.Line2(
-                geometry=self._line_geometry, material=self._line_material
+                geometry=self._line_geometry,
+                material=self._line_material,
+                visible=visible,
             )
 
         if self._marker not in (None, 'none'):
@@ -85,7 +89,9 @@ class Line:
                 transparent=self._alpha < 1.0,
             )
             self._vertices = p3.Points(
-                geometry=self._vertices_geometry, material=self._vertices_material
+                geometry=self._vertices_geometry,
+                material=self._vertices_material,
+                visible=visible,
             )
 
     def get_bbox(self):

@@ -79,46 +79,59 @@ class Points:
         norm: str = None,
         xscale=None,
         yscale=None,
+        color=None,
+        visible=None,
         **ignored,
     ) -> None:
-        c = c or "C0"
-        s = s or 5
-        marker = marker or "s"
-        zorder = zorder or 0
-        cmap = cmap or "viridis"
-        norm: str = norm or "linear"
-        xscale = xscale or "linear"
-        yscale = yscale or "linear"
+        self._color = color or (c or "C0")
+        self._size = s or 5
+        self._marker = marker or "s"
+        self._zorder = zorder or 0
+        self._cmap = cmap or "viridis"
+        self._norm = norm or "linear"
+        self._xscale = xscale or "linear"
+        self._yscale = yscale or "linear"
+        self._zorder = zorder or 1
+        visible = visible if visible is not None else True
 
         self.axes = None
         self._x = np.asarray(x)
         self._y = np.asarray(y)
-        self._xscale = xscale
-        self._yscale = yscale
-        self._zorder = zorder
+        # self._xscale = xscale
+        # self._yscale = yscale
+        # self._zorder = zorder
 
         geometry_attributes = {
             "position": p3.BufferAttribute(array=self._make_positions())
         }
 
-        if not isinstance(c, str) or not np.isscalar(s) or marker != "s":
-            if isinstance(c, str):
-                self._c = np.ones_like(self._x)
+        if (
+            not isinstance(self._color, str)
+            or not np.isscalar(self._size)
+            or self._marker != "s"
+        ):
+            if isinstance(self._color, str):
+                self._color_array = np.ones_like(self._x)
                 self._norm = Normalizer(vmin=1, vmax=1)
-                self._cmap = cm.LinearSegmentedColormap.from_list("tmp", [c, c])
-            else:
-                self._c = np.asarray(c)
-                self._norm = Normalizer(
-                    vmin=np.min(self._c), vmax=np.max(self._c), norm=norm
+                self._cmap = cm.LinearSegmentedColormap.from_list(
+                    "tmp", [self._color, self._color]
                 )
-                self._cmap = mpl.colormaps[cmap].copy()
+            else:
+                self._color = np.asarray(self._color)
+                self._color_array = self._color
+                self._norm = Normalizer(
+                    vmin=np.min(self._color_array),
+                    vmax=np.max(self._color_array),
+                    norm=self._norm,
+                )
+                self._cmap = mpl.colormaps[self._cmap].copy()
 
             colors = self._make_colors()
 
-            if np.isscalar(s):
-                sizes = np.full_like(self._x, s, dtype=np.float32)
+            if np.isscalar(self._size):
+                sizes = np.full_like(self._x, self._size, dtype=np.float32)
             else:
-                sizes = np.asarray(s, dtype=np.float32)
+                sizes = np.asarray(self._size, dtype=np.float32)
 
             geometry_attributes.update(
                 {
@@ -129,14 +142,18 @@ class Points:
             # Create ShaderMaterial with custom shaders
             self._material = p3.ShaderMaterial(
                 vertexShader=VERTEX_SHADER,
-                fragmentShader=FRAGMENT_SHADERS[marker],
+                fragmentShader=FRAGMENT_SHADERS[self._marker],
                 transparent=True,
             )
         else:
-            self._material = p3.PointsMaterial(color=cm.to_hex(c), size=s)
+            self._material = p3.PointsMaterial(
+                color=cm.to_hex(self._color), size=self._size
+            )
 
         self._geometry = p3.BufferGeometry(attributes=geometry_attributes)
-        self._points = p3.Points(geometry=self._geometry, material=self._material)
+        self._points = p3.Points(
+            geometry=self._geometry, material=self._material, visible=visible
+        )
 
     def _make_positions(self) -> np.ndarray:
         with warnings.catch_warnings(category=RuntimeWarning, action="ignore"):
@@ -145,7 +162,7 @@ class Points:
         return np.array([xx, yy, np.full_like(xx, self._zorder)], dtype="float32").T
 
     def _make_colors(self) -> np.ndarray:
-        return self._cmap(self.norm(self._c))[..., :3].astype("float32")
+        return self._cmap(self.norm(self._color_array))[..., :3].astype("float32")
 
     def _update_colors(self) -> None:
         self._geometry.attributes["customColor"].array = self._make_colors()
@@ -172,6 +189,12 @@ class Points:
     def get_ydata(self) -> np.ndarray:
         return self._y
 
+    def get_visible(self) -> bool:
+        return self._points.visible
+
+    def set_visible(self, visible: bool):
+        self._points.visible = visible
+
     def set_ydata(self, y):
         self._y = np.asarray(y)
         self._update_positions()
@@ -190,7 +213,8 @@ class Points:
         self._update_positions()
 
     def set_array(self, c: np.ndarray):
-        self._c = np.asarray(c)
+        self._color = np.asarray(c)
+        self._color_array = self._color
         self._update_colors()
 
     def set_cmap(self, cmap: str) -> None:
@@ -230,7 +254,7 @@ class Points:
         self._zorder = zorder
         self._update_positions()
 
-    # def get_color(self):
-    #     return self._color
+    def get_color(self):
+        return self._color
 
     # def set_color(self, color):
