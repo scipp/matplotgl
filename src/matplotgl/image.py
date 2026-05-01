@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
+from typing import Literal
 
 import matplotlib as mpl
 import matplotlib.colors as cm
@@ -13,19 +14,28 @@ class Image:
         self,
         array: np.ndarray,
         extent: list[float] | None = None,
-        cmap: str = "viridis",
-        norm: str = "linear",
-        zorder: float = 0,
+        cmap: str | None = None,
+        norm: str | Normalizer | None = None,
+        zorder: float | None = None,
+        origin: Literal["upper", "lower"] | None = None,
     ):
+
+        cmap = cmap or "viridis"
+        norm = norm or "linear"
+        zorder = zorder or 0
+        self._origin = origin or "upper"
+
         self.axes = None
         self._colorbar = None
         self._array = np.asarray(array)
-        self._extent = (
-            extent if extent is not None else [0, array.shape[1], 0, array.shape[0]]
-        )
+        if self._origin == "upper":
+            self._array = np.flip(self._array, axis=0)
+        self._extent = extent or [0, array.shape[1], 0, array.shape[0]]
         self._zorder = zorder
-        self._norm = Normalizer(
-            vmin=np.min(self._array), vmax=np.max(self._array), norm=norm
+        self._norm = (
+            Normalizer(vmin=np.min(self._array), vmax=np.max(self._array), norm=norm)
+            if isinstance(norm, str)
+            else norm
         )
         self._cmap = mpl.colormaps[cmap].copy()
         self._texture = p3.DataTexture(
@@ -50,7 +60,16 @@ class Image:
         )
 
     def _make_colors(self) -> np.ndarray:
+        if self._array.ndim == 3 and self._array.shape[2] in (3, 4):
+            if self._array.dtype == np.uint8:
+                return self._array.astype("float32") / 255
+            return self._array.astype("float32")
         return self._cmap(self.norm(self._array))[..., :3].astype("float32")
+
+    def set_axes(self, axes):
+        self.axes = axes
+        if self._origin == "upper":
+            self.axes.y_inverted = True
 
     def get_bbox(self) -> dict[str, float]:
         return {

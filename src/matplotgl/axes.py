@@ -64,6 +64,9 @@ class Axes(ipw.GridBox):
         self.collections = []
         self.images = []
 
+        self.x_inverted = False
+        self.y_inverted = False
+
         # Make background to enable box zoom.
         # Use a size based on limits of the float32 range.
         self._background_geometry = p3.PlaneGeometry(
@@ -454,6 +457,9 @@ class Axes(ipw.GridBox):
         trans_data = self._ax.transData
         yticks_axes = inv_trans_axes.transform(trans_data.transform(xy))[:, 1]
 
+        # Check if y-axis is inverted
+        # y_inverted = self._ax.yaxis_inverted()
+
         # Predict width of the left margin based on the longest label
         # Need to convert to integer to avoid sub-pixel rendering issues
         max_length = math.ceil(max(lab.get_tightbbox().width for lab in ylabels))
@@ -478,7 +484,10 @@ class Axes(ipw.GridBox):
         for tick, label in zip(yticks_axes, ytexts, strict=True):
             if tick < 0 or tick > 1.0:
                 continue
-            y = self.height - (tick * self.height)
+            if self.y_inverted:
+                y = tick * self.height
+            else:
+                y = self.height - (tick * self.height)
             left_string.append(
                 f'<line x1="{width_px}" y1="{y}" '
                 f'x2="{width1_px}" y2="{y}" '
@@ -499,7 +508,10 @@ class Axes(ipw.GridBox):
             for tick in yticks_axes:
                 if tick < 0 or tick > 1.0:
                     continue
-                y = self.height - (tick * self.height)
+                if self.y_inverted:
+                    y = tick * self.height
+                else:
+                    y = self.height - (tick * self.height)
                 left_string.append(
                     f'<line x1="{width_px}" y1="{y}" '
                     f'x2="{width3_px}" y2="{y}" '
@@ -508,6 +520,7 @@ class Axes(ipw.GridBox):
 
         left_string.append("</svg></div>")
         self._margins["leftspine"].value = "".join(left_string)
+
         self._margins["rightspine"].value = (
             f'<svg height="{self.height}" width="{self._thin_margin}">'
             f'<line x1="0" y1="0" x2="0" y2="{self.height}" '
@@ -779,7 +792,7 @@ class Axes(ipw.GridBox):
 
     def imshow(self, *args, **kwargs):
         image = Image(*args, **kwargs)
-        image.axes = self
+        image.set_axes(self)
         self.images.append(image)
         self.add_artist(image)
         self.autoscale()
